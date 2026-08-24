@@ -19,6 +19,7 @@ import (
 	persistencespb "go.temporal.io/server/api/persistence/v1"
 	"go.temporal.io/server/chasm"
 	chasmcallback "go.temporal.io/server/chasm/lib/callback"
+	callbackspb "go.temporal.io/server/chasm/lib/callback/gen/callbackpb/v1"
 	"go.temporal.io/server/chasm/lib/nexusoperation"
 	chasmworkflow "go.temporal.io/server/chasm/lib/workflow"
 	"go.temporal.io/server/common"
@@ -595,9 +596,10 @@ func buildChasmCallbackInfo(
 	trigger *workflowpb.CallbackInfo_Trigger,
 	circuitBreakerState func(destination string) bool,
 ) (*workflowpb.CallbackInfo, error) {
-	nexusVariant := cb.GetCallback().GetNexus()
-	if nexusVariant == nil {
-		// Only Nexus callbacks are supported
+	switch cb.GetCallback().GetVariant().(type) {
+	case *callbackspb.Callback_Nexus_, *callbackspb.Callback_Worker_:
+	default:
+		// Callbacks of an unrecognized variant are omitted rather than reported as an error.
 		return nil, nil
 	}
 
@@ -610,8 +612,10 @@ func buildChasmCallbackInfo(
 		return nil, err
 	}
 
-	blockedReason := ""
-	if state == enumspb.CALLBACK_STATE_SCHEDULED {
+	var blockedReason string
+	// Only Nexus callbacks are dispatched over the outbound queue, so only they can be blocked
+	// by its circuit breaker.
+	if state == enumspb.CALLBACK_STATE_SCHEDULED && cbSpec.GetNexus() != nil {
 		if circuitBreakerState(cbSpec.GetNexus().GetUrl()) {
 			state = enumspb.CALLBACK_STATE_BLOCKED
 			blockedReason = "The circuit breaker is open."
