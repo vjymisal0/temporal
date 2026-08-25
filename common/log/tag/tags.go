@@ -24,6 +24,8 @@ const (
 	LoggingCallAtKey = "logging-call-at"
 	WorkflowIDKey    = "wf-id"
 	WorkflowRunIDKey = "wf-run-id"
+	OperationIDKey   = "operation-id"
+	ChasmRunIDKey    = "run-id"
 )
 
 // ==========  Common tags defined here ==========
@@ -938,12 +940,12 @@ func ActivityID(id string) ZapTag {
 
 // OperationID returns tag for a nexus operation ID
 func OperationID(id string) ZapTag {
-	return NewStringTag("operation-id", id)
+	return NewStringTag(OperationIDKey, id)
 }
 
 // ChasmRunID returns tag for an entity run ID
 func ChasmRunID(id string) ZapTag {
-	return NewStringTag("run-id", id)
+	return NewStringTag(ChasmRunIDKey, id)
 }
 
 // ActivitySize returns a tag for a standalone activity size
