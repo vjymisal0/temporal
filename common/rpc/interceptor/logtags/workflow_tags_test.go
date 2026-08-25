@@ -36,7 +36,7 @@ func TestExtract(t *testing.T) {
 	nexusTaskTokenBytes, err := serializer.SerializeNexusTaskToken(&tokenspb.NexusTask{
 		NamespaceId: string(tv.NamespaceID()),
 		TaskQueue:   tv.TaskQueue().GetName(),
-		TaskId:      tv.Any().String(),
+		TaskId:      "nexus-task-id",
 	})
 	require.NoError(t, err)
 
