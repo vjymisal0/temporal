@@ -35,6 +35,20 @@ func TestServerStatsHandler(t *testing.T) {
 		require.NotContains(t, spanAttrsByKey, "rpc.response.payload")
 	})
 
+	t.Run("annotate span with Nexus operation tags", func(t *testing.T) {
+		t.Parallel()
+
+		attrs := captureServerRPCAttributes(t, "PollNexusOperationExecution", &stats.InPayload{
+			Payload: &workflowservice.PollNexusOperationExecutionRequest{
+				OperationId: "OPERATION-ID",
+				RunId:       "RUN-ID",
+			},
+		}, &stats.End{})
+
+		require.Equal(t, "OPERATION-ID", attrs[telemetry.BusinessIDKey].Value.AsString())
+		require.Equal(t, "RUN-ID", attrs[telemetry.RunIDKey].Value.AsString())
+	})
+
 	t.Run("annotate span with request/response payload in debug mode", func(t *testing.T) {
 		t.Setenv("TEMPORAL_OTEL_DEBUG", "true")
 
