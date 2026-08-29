@@ -3,8 +3,12 @@ package testcore
 import (
 	"sync"
 	"testing"
+	"time"
 
+	"go.temporal.io/server/common/headers"
 	"go.temporal.io/server/common/testing/parallelsuite"
+	"go.temporal.io/server/common/testing/testcontext"
+	"google.golang.org/grpc/metadata"
 )
 
 type TestEnvSuite struct {
@@ -45,4 +49,16 @@ func (s *TestEnvSuite) TestDedicatedClusterGuard_ConcurrentRecord() {
 	}
 	wg.Wait()
 	s.NoError(guard.validate())
+}
+
+func (s *TestEnvSuite) TestContextCachesVersionHeadersAcrossExtension() {
+	env := NewEnv(s.T())
+	ctx := env.Context()
+	md, ok := metadata.FromOutgoingContext(ctx)
+	s.Require().True(ok)
+	s.Require().Equal([]string{headers.ClientNameServer}, md.Get(headers.ClientNameHeaderName))
+	s.Require().Equal([]string{headers.ServerVersion}, md.Get(headers.ClientVersionHeaderName))
+
+	testcontext.EnsureRemaining(ctx, s.T(), testcontext.DefaultTimeout()+time.Second)
+	s.Require().Same(ctx, env.Context())
 }
