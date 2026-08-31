@@ -597,7 +597,7 @@ func buildChasmCallbackInfo(
 	circuitBreakerState func(destination string) bool,
 ) (*workflowpb.CallbackInfo, error) {
 	switch cb.GetCallback().GetVariant().(type) {
-	case *callbackspb.Callback_Nexus_, *callbackspb.Callback_Worker_:
+	case *callbackspb.Callback_Nexus_, *callbackspb.Callback_NexusHandler_:
 	default:
 		// Callbacks of an unrecognized variant are omitted rather than reported as an error.
 		return nil, nil
