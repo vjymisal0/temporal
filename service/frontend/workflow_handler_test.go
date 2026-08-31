@@ -189,9 +189,9 @@ func (s *WorkflowHandlerSuite) getWorkflowHandler(config *Config) *WorkflowHandl
 				},
 			}
 		},
-		MaxServiceNameLength:       func(string) int { return 100 },
-		MaxOperationNameLength:     func(string) int { return 100 },
-		WorkerSourceContextMaxSize: func(string) int { return 4096 },
+		MaxServiceNameLength:             func(string) int { return 100 },
+		MaxOperationNameLength:           func(string) int { return 100 },
+		NexusHandlerSourceContextMaxSize: func(string) int { return 4096 },
 	})
 	s.NoError(err)
 
