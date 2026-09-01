@@ -35,6 +35,29 @@ func TestServerStatsHandler(t *testing.T) {
 		require.NotContains(t, spanAttrsByKey, "rpc.response.payload")
 	})
 
+	t.Run("annotate span with namespace", func(t *testing.T) {
+		t.Parallel()
+
+		attrs := captureServerRPCAttributes(t, "StartWorkflowExecution", &stats.InPayload{
+			Payload: &workflowservice.StartWorkflowExecutionRequest{
+				Namespace:  "NAMESPACE",
+				WorkflowId: "WF-ID",
+			},
+		}, &stats.End{})
+
+		require.Equal(t, "NAMESPACE", attrs["temporalNamespace"].Value.AsString())
+	})
+
+	t.Run("omit empty namespace", func(t *testing.T) {
+		t.Parallel()
+
+		attrs := captureServerRPCAttributes(t, "StartWorkflowExecution", &stats.InPayload{
+			Payload: &workflowservice.StartWorkflowExecutionRequest{WorkflowId: "WF-ID"},
+		}, &stats.End{})
+
+		require.NotContains(t, attrs, "temporalNamespace")
+	})
+
 	t.Run("annotate span with Nexus operation tags", func(t *testing.T) {
 		t.Parallel()
 

@@ -562,3 +562,31 @@ func TestConvertNexusLinkToLinkWorkflowEvent(t *testing.T) {
 		})
 	}
 }
+
+func TestHandlerWorkflowIDFromLinks(t *testing.T) {
+	startedLink := commonnexus.ConvertLinkWorkflowEventToNexusLink(&commonpb.Link_WorkflowEvent{
+		Namespace:  "namespace",
+		WorkflowId: "handler-workflow-id",
+		RunId:      "handler-run-id",
+		Reference: &commonpb.Link_WorkflowEvent_EventRef{
+			EventRef: &commonpb.Link_WorkflowEvent_EventReference{
+				EventType: enumspb.EVENT_TYPE_WORKFLOW_EXECUTION_STARTED,
+			},
+		},
+	})
+	signaledLink := commonnexus.ConvertLinkWorkflowEventToNexusLink(&commonpb.Link_WorkflowEvent{
+		Namespace:  "namespace",
+		WorkflowId: "other-workflow-id",
+		RunId:      "other-run-id",
+		Reference: &commonpb.Link_WorkflowEvent_EventRef{
+			EventRef: &commonpb.Link_WorkflowEvent_EventReference{
+				EventType: enumspb.EVENT_TYPE_WORKFLOW_EXECUTION_SIGNALED,
+			},
+		},
+	})
+
+	require.Equal(t, "handler-workflow-id", commonnexus.HandlerWorkflowIDFromLinks([]nexus.Link{
+		signaledLink,
+		startedLink,
+	}))
+}

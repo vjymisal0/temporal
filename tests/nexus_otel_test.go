@@ -224,10 +224,12 @@ func (s *NexusOTELSuite) TestOperation() {
 			Kind:         oteltrace.SpanKindServer,
 			URLPath:      operationURLPath,
 			NexusAttrs: map[string]any{
-				"temporalNexusEndpoint":  handlerWorkerEndpoint.GetSpec().GetName(),
-				"temporalNexusOperation": operation.Name(),
-				"temporalNexusRequestID": nexusRequestID,
-				"temporalNexusService":   service.Name,
+				"temporalNexusEndpoint":          handlerWorkerEndpoint.GetSpec().GetName(),
+				"temporalNexusHandlerWorkflowID": nexusRequestID,
+				"temporalNexusOperation":         operation.Name(),
+				"temporalNexusOutcome":           "async_success",
+				"temporalNexusRequestID":         nexusRequestID,
+				"temporalNexusService":           service.Name,
 			},
 		},
 		{
@@ -316,6 +318,7 @@ func (s *NexusOTELSuite) TestWorkerOperation() {
 			NexusAttrs: map[string]any{
 				"temporalNexusEndpoint":  endpoint.GetSpec().GetName(),
 				"temporalNexusOperation": operation.Name(),
+				"temporalNexusOutcome":   "sync_success",
 				"temporalNexusRequestID": request.requestID,
 				"temporalNexusService":   service.Name,
 			},
@@ -390,6 +393,7 @@ func (s *NexusOTELSuite) TestNamespaceAndTaskQueueDispatch() {
 		Status:      codes.Error,
 		NexusAttrs: map[string]any{
 			"temporalNexusOperation": "my-operation",
+			"temporalNexusOutcome":   "handler_error",
 			"temporalNexusRequestID": requestID,
 			"temporalNexusService":   "test-service",
 		},
@@ -488,8 +492,10 @@ func (s *NexusOTELSuite) nexusHTTPSpans(
 			key := string(attr.Key)
 			switch key {
 			case "temporalNexusEndpoint",
+				"temporalNexusHandlerWorkflowID",
 				"temporalNexusNamespace",
 				"temporalNexusOperation",
+				"temporalNexusOutcome",
 				"temporalNexusRequestID",
 				"temporalNexusService":
 				if nexusAttrs == nil {

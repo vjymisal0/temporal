@@ -3,6 +3,7 @@ package nexusrpc
 import (
 	"net/http"
 
+	"github.com/nexus-rpc/sdk-go/nexus"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"go.temporal.io/server/common/telemetry"
@@ -10,10 +11,43 @@ import (
 
 // ServerSpanAttributes describes Nexus request attributes added to a server trace span.
 type ServerSpanAttributes struct {
+	SpanName  string
 	Endpoint  string
 	Service   string
 	Operation string
 	RequestID string
+}
+
+// ServerSpanResultAttributes describes Nexus response attributes added to a server trace span.
+type ServerSpanResultAttributes struct {
+	Outcome           string
+	Links             []nexus.Link
+	HandlerWorkflowID string
+}
+
+// AnnotateServerSpanResult adds Nexus response attributes to span.
+func AnnotateServerSpanResult(
+	span trace.Span,
+	attrs ServerSpanResultAttributes,
+) {
+	// Non-recording spans discard attributes, so avoid constructing them.
+	if !span.IsRecording() {
+		return
+	}
+	kvs := []attribute.KeyValue{attribute.String(telemetry.NexusOutcomeKey, attrs.Outcome)}
+	linkURLs := make([]string, 0, len(attrs.Links))
+	for _, link := range attrs.Links {
+		if link.URL != nil {
+			linkURLs = append(linkURLs, link.URL.String())
+		}
+	}
+	if len(linkURLs) > 0 {
+		kvs = append(kvs, attribute.StringSlice(telemetry.NexusLinksKey, linkURLs))
+	}
+	if attrs.HandlerWorkflowID != "" {
+		kvs = append(kvs, attribute.String(telemetry.NexusHandlerWorkflowIDKey, attrs.HandlerWorkflowID))
+	}
+	span.SetAttributes(kvs...)
 }
 
 // AnnotateServerSpan adds Nexus request attributes to span.
@@ -21,6 +55,9 @@ func AnnotateServerSpan(span trace.Span, attrs ServerSpanAttributes) {
 	// Non-recording spans discard attributes, so avoid constructing them.
 	if !span.IsRecording() {
 		return
+	}
+	if attrs.SpanName != "" {
+		span.SetName(attrs.SpanName)
 	}
 	kvs := []attribute.KeyValue{
 		attribute.String(telemetry.NexusServiceKey, attrs.Service),

@@ -93,10 +93,23 @@ func (c *operationContext) annotateServerSpan(
 	service, operation, requestID string,
 ) {
 	nexusrpc.AnnotateServerSpan(trace.SpanFromContext(ctx), nexusrpc.ServerSpanAttributes{
+		SpanName:  strings.TrimPrefix(c.apiName, "/"),
 		Endpoint:  c.endpointName,
 		Service:   service,
 		Operation: operation,
 		RequestID: requestID,
+	})
+}
+
+func (c *operationContext) annotateServerSpanResult(
+	ctx context.Context,
+	outcome string,
+	links []nexus.Link,
+) {
+	nexusrpc.AnnotateServerSpanResult(trace.SpanFromContext(ctx), nexusrpc.ServerSpanResultAttributes{
+		Outcome:           outcome,
+		Links:             links,
+		HandlerWorkflowID: commonnexus.HandlerWorkflowIDFromLinks(links),
 	})
 }
 
@@ -480,6 +493,7 @@ func (h *nexusHandler) StartOperation(
 	response, err := h.matchingClient.DispatchNexusTask(ctx, request)
 	if err != nil {
 		oc.metricsHandler = oc.metricsHandler.WithTags(metrics.OutcomeTag("matching_timeout"))
+		oc.annotateServerSpanResult(ctx, "matching_timeout", nil)
 		oc.logger.Error("received error from matching service for Nexus StartOperation request", tag.Error(err))
 		return nil, commonnexus.ConvertGRPCError(err, false)
 	}
@@ -491,6 +505,7 @@ func (h *nexusHandler) StartOperation(
 		// the worker.
 		oc.setFailureSource(commonnexus.FailureSourceWorker)
 		oc.metricsHandler = oc.metricsHandler.WithTags(metrics.OutcomeTag("handler_error:" + t.Failure.GetNexusHandlerFailureInfo().GetType()))
+		oc.annotateServerSpanResult(ctx, "handler_error", nil)
 		nf, err := commonnexus.TemporalFailureToNexusFailureInPlace(t.Failure)
 		if err != nil {
 			oc.logger.Error("error converting Temporal failure to Nexus failure", tag.Error(err), tag.Operation(operation), tag.WorkflowNamespace(oc.namespaceName))
@@ -506,12 +521,14 @@ func (h *nexusHandler) StartOperation(
 	case *matchingservice.DispatchNexusTaskResponse_HandlerError:
 		// Deprecated case. Replaced with DispatchNexusTaskResponse_Failure
 		oc.metricsHandler = oc.metricsHandler.WithTags(metrics.OutcomeTag("handler_error:" + t.HandlerError.GetErrorType()))
+		oc.annotateServerSpanResult(ctx, "handler_error", nil)
 		oc.setFailureSource(commonnexus.FailureSourceWorker)
 		err := convertOutcomeToNexusHandlerError(t)
 		return nil, err
 
 	case *matchingservice.DispatchNexusTaskResponse_RequestTimeout:
 		oc.metricsHandler = oc.metricsHandler.WithTags(metrics.OutcomeTag("handler_timeout"))
+		oc.annotateServerSpanResult(ctx, "handler_timeout", nil)
 		oc.setFailureSource(commonnexus.FailureSourceWorker)
 		return nil, nexus.NewHandlerErrorf(nexus.HandlerErrorTypeUpstreamTimeout, "upstream timeout")
 
@@ -520,6 +537,7 @@ func (h *nexusHandler) StartOperation(
 		case *nexuspb.StartOperationResponse_SyncSuccess:
 			oc.metricsHandler = oc.metricsHandler.WithTags(metrics.OutcomeTag("sync_success"))
 			links := parseLinks(t.SyncSuccess.GetLinks(), oc.logger)
+			oc.annotateServerSpanResult(ctx, "sync_success", links)
 			nexus.AddHandlerLinks(ctx, links...)
 			return &nexus.HandlerStartOperationResultSync[any]{
 				Value: t.SyncSuccess.GetPayload(),
@@ -532,6 +550,7 @@ func (h *nexusHandler) StartOperation(
 				token = t.AsyncSuccess.GetOperationId()
 			}
 			links := parseLinks(t.AsyncSuccess.GetLinks(), oc.logger)
+			oc.annotateServerSpanResult(ctx, "async_success", links)
 			nexus.AddHandlerLinks(ctx, links...)
 			return &nexus.HandlerStartOperationResultAsync{
 				OperationToken: token,
@@ -539,6 +558,7 @@ func (h *nexusHandler) StartOperation(
 
 		case *nexuspb.StartOperationResponse_OperationError:
 			oc.metricsHandler = oc.metricsHandler.WithTags(metrics.OutcomeTag("operation_error"))
+			oc.annotateServerSpanResult(ctx, "operation_error", nil)
 			oc.setFailureSource(commonnexus.FailureSourceWorker)
 			opErr := &nexus.OperationError{
 				Message: "operation error",
@@ -560,6 +580,7 @@ func (h *nexusHandler) StartOperation(
 			// Failure conversions errors below are the user's fault, as it implies that malformed completions were sent from
 			// the worker.
 			oc.metricsHandler = oc.metricsHandler.WithTags(metrics.OutcomeTag("failure"))
+			oc.annotateServerSpanResult(ctx, "operation_error", nil)
 			oc.setFailureSource(commonnexus.FailureSourceWorker)
 			nf, err := commonnexus.TemporalFailureToNexusFailureInPlace(t.Failure)
 			if err != nil {
@@ -589,6 +610,7 @@ func (h *nexusHandler) StartOperation(
 	}
 	// This is the worker's fault.
 	oc.metricsHandler = oc.metricsHandler.WithTags(metrics.OutcomeTag("handler_error:EMPTY_OUTCOME"))
+	oc.annotateServerSpanResult(ctx, "empty_outcome", nil)
 	oc.setFailureSource(commonnexus.FailureSourceWorker)
 
 	return nil, nexus.NewHandlerErrorf(nexus.HandlerErrorTypeInternal, "empty outcome")

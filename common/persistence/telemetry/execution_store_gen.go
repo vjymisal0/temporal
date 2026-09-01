@@ -153,7 +153,9 @@ func (d telemetryExecutionStore) ConflictResolveWorkflowExecution(ctx context.Co
 		trace.WithAttributes(
 			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
 			attribute.Key(telemetry.PersistenceMethodKey).String("ConflictResolveWorkflowExecution"),
-		))
+		),
+		executionSpanStartOption(request),
+	)
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
@@ -188,7 +190,9 @@ func (d telemetryExecutionStore) CreateWorkflowExecution(ctx context.Context, re
 		trace.WithAttributes(
 			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
 			attribute.Key(telemetry.PersistenceMethodKey).String("CreateWorkflowExecution"),
-		))
+		),
+		executionSpanStartOption(request),
+	)
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
@@ -230,7 +234,9 @@ func (d telemetryExecutionStore) DeleteCurrentWorkflowExecution(ctx context.Cont
 		trace.WithAttributes(
 			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
 			attribute.Key(telemetry.PersistenceMethodKey).String("DeleteCurrentWorkflowExecution"),
-		))
+		),
+		executionSpanStartOption(request),
+	)
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
@@ -370,7 +376,9 @@ func (d telemetryExecutionStore) DeleteWorkflowExecution(ctx context.Context, re
 		trace.WithAttributes(
 			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
 			attribute.Key(telemetry.PersistenceMethodKey).String("DeleteWorkflowExecution"),
-		))
+		),
+		executionSpanStartOption(request),
+	)
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
@@ -482,7 +490,9 @@ func (d telemetryExecutionStore) GetCurrentExecution(ctx context.Context, reques
 		trace.WithAttributes(
 			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
 			attribute.Key(telemetry.PersistenceMethodKey).String("GetCurrentExecution"),
-		))
+		),
+		executionSpanStartOption(request),
+	)
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
@@ -650,7 +660,9 @@ func (d telemetryExecutionStore) GetWorkflowExecution(ctx context.Context, reque
 		trace.WithAttributes(
 			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
 			attribute.Key(telemetry.PersistenceMethodKey).String("GetWorkflowExecution"),
-		))
+		),
+		executionSpanStartOption(request),
+	)
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
@@ -923,7 +935,9 @@ func (d telemetryExecutionStore) SetWorkflowExecution(ctx context.Context, reque
 		trace.WithAttributes(
 			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
 			attribute.Key(telemetry.PersistenceMethodKey).String("SetWorkflowExecution"),
-		))
+		),
+		executionSpanStartOption(request),
+	)
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
@@ -958,7 +972,9 @@ func (d telemetryExecutionStore) UpdateWorkflowExecution(ctx context.Context, re
 		trace.WithAttributes(
 			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
 			attribute.Key(telemetry.PersistenceMethodKey).String("UpdateWorkflowExecution"),
-		))
+		),
+		executionSpanStartOption(request),
+	)
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
