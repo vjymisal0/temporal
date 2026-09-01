@@ -14,7 +14,7 @@ const (
 	ComponentQueueTransfer        = "temporalQueueTransfer"
 	ComponentQueueVisibility      = "temporalQueueVisibility"
 	ComponentUpdateRegistry       = "temporalUpdateRegistry"
-	DeadlineKey                   = "temporalDeadline"
+	DeadlineKey                   = "deadline"
 	NamespaceIDKey                = "temporalNamespaceID"
 	NexusEndpointKey              = "temporalNexusEndpoint"
 	NexusNamespaceKey             = "temporalNexusNamespace"
@@ -29,7 +29,7 @@ const (
 	QueueTaskPayloadKey           = "temporalQueueTaskPayload"
 	QueueTaskTypeKey              = "temporalQueueTaskType"
 	RunIDKey                      = "temporalRunID"
-	TimeoutKey                    = "temporalTimeout"
+	TimeoutKey                    = "timeout"
 	WorkerTaskIDKey               = "temporalWorkerTaskID"
 	WorkflowIDKey                 = "temporalWorkflowID"
 )
