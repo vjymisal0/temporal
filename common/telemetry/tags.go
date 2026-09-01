@@ -1,6 +1,17 @@
 package telemetry
 
 const (
+	ComponentPersistence     = "temporalPersistence"
+	ComponentQueueArchival   = "temporalQueueArchival"
+	ComponentQueueMemory     = "temporalQueueMemory"
+	ComponentQueueOutbound   = "temporalQueueOutbound"
+	ComponentQueueTimer      = "temporalQueueTimer"
+	ComponentQueueTransfer   = "temporalQueueTransfer"
+	ComponentQueueVisibility = "temporalQueueVisibility"
+	ComponentUpdateRegistry  = "temporalUpdateRegistry"
+)
+
+const (
 	BusinessIDKey                 = "temporalBusinessID"
 	ChasmArchetypeIDKey           = "temporalChasmArchetypeID"
 	ChasmTransitionDestinationKey = "temporalChasmTransitionDestination"
@@ -22,15 +33,4 @@ const (
 	RunIDKey                      = "temporalRunID"
 	WorkerTaskIDKey               = "temporalWorkerTaskID"
 	WorkflowIDKey                 = "temporalWorkflowID"
-)
-
-const (
-	ComponentPersistence     = "temporalPersistence"
-	ComponentQueueArchival   = "temporalQueueArchival"
-	ComponentQueueMemory     = "temporalQueueMemory"
-	ComponentQueueOutbound   = "temporalQueueOutbound"
-	ComponentQueueTimer      = "temporalQueueTimer"
-	ComponentQueueTransfer   = "temporalQueueTransfer"
-	ComponentQueueVisibility = "temporalQueueVisibility"
-	ComponentUpdateRegistry  = "temporalUpdateRegistry"
 )
