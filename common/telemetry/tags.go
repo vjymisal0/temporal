@@ -20,6 +20,8 @@ const (
 	NamespaceIDKey                = "temporalNamespaceID"
 	NamespaceKey                  = "temporalNamespace"
 	NexusEndpointKey              = "temporalNexusEndpoint"
+	NexusHandlerNamespaceKey      = "temporalNexusHandlerNamespace"
+	NexusHandlerRunIDKey          = "temporalNexusHandlerRunID"
 	NexusHandlerWorkflowIDKey     = "temporalNexusHandlerWorkflowID"
 	NexusLinksKey                 = "temporalNexusLinks"
 	NexusNamespaceKey             = "temporalNexusNamespace"

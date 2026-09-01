@@ -380,3 +380,14 @@ func TestNexusInterceptRequest_HeadersSanitization(t *testing.T) {
 	require.Equal(t, initialHeader, header)
 	require.Equal(t, map[string]string{"ok-header": "ok"}, request.Request.Header)
 }
+
+func TestAnnotateServerSpanResultSkipsLinkParsingForNonRecordingSpan(t *testing.T) {
+	oc := operationContext{}
+	links := []nexus.Link{{
+		Type: "temporal.api.common.v1.Link.WorkflowEvent",
+	}}
+
+	require.NotPanics(t, func() {
+		oc.annotateServerSpanResult(context.Background(), "async_success", links)
+	})
+}

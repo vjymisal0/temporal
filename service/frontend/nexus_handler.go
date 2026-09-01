@@ -107,9 +107,8 @@ func (c *operationContext) annotateServerSpanResult(
 	links []nexus.Link,
 ) {
 	nexusrpc.AnnotateServerSpanResult(trace.SpanFromContext(ctx), nexusrpc.ServerSpanResultAttributes{
-		Outcome:           outcome,
-		Links:             links,
-		HandlerWorkflowID: commonnexus.HandlerWorkflowIDFromLinks(links),
+		Outcome: outcome,
+		Links:   links,
 	})
 }
 
