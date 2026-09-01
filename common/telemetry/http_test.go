@@ -280,10 +280,10 @@ func TestNewHTTPClientTransport(t *testing.T) {
 			require.Equal(t, map[string]any{
 				"temporalHttpRequestHeader.request-header":   []string{"request-value"},
 				"temporalHttpRequestHeader.traceparent":      []string{"00-0102030405060708090a0b0c0d0e0f10-0102030405060708-01"},
-				"http.request.method":                        "POST",
 				"temporalHttpRequestPayload":                 requestPayload,
 				"temporalHttpResponseHeader.response-header": []string{"response-value"},
 				"temporalHttpResponsePayload":                responsePayload,
+				"http.request.method":                        "POST",
 				"http.response.status_code":                  int64(http.StatusOK),
 				"network.protocol.version":                   "1.1",
 				"server.address":                             "example.com",
