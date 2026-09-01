@@ -213,7 +213,7 @@ func (s *NexusOTELSuite) TestOperation() {
 			Kind:        oteltrace.SpanKindClient,
 			URLPath:     operationURLPath,
 			NexusAttrs: map[string]any{
-				"nexus.request_id": nexusRequestID,
+				telemetry.NexusRequestIDKey: nexusRequestID,
 			},
 		},
 		{
@@ -225,10 +225,10 @@ func (s *NexusOTELSuite) TestOperation() {
 			Kind:         oteltrace.SpanKindServer,
 			URLPath:      operationURLPath,
 			NexusAttrs: map[string]any{
-				"nexus.endpoint":   handlerWorkerEndpoint.GetSpec().GetName(),
-				"nexus.operation":  operation.Name(),
-				"nexus.request_id": nexusRequestID,
-				"nexus.service":    service.Name,
+				telemetry.NexusEndpointKey:  handlerWorkerEndpoint.GetSpec().GetName(),
+				telemetry.NexusOperationKey: operation.Name(),
+				telemetry.NexusRequestIDKey: nexusRequestID,
+				telemetry.NexusServiceKey:   service.Name,
 			},
 		},
 		{
@@ -248,9 +248,9 @@ func (s *NexusOTELSuite) TestOperation() {
 			Kind:         oteltrace.SpanKindServer,
 			URLPath:      operationURLPath + "/cancel",
 			NexusAttrs: map[string]any{
-				"nexus.endpoint":  handlerWorkerEndpoint.GetSpec().GetName(),
-				"nexus.operation": operation.Name(),
-				"nexus.service":   service.Name,
+				telemetry.NexusEndpointKey:  handlerWorkerEndpoint.GetSpec().GetName(),
+				telemetry.NexusOperationKey: operation.Name(),
+				telemetry.NexusServiceKey:   service.Name,
 			},
 		},
 	})
@@ -302,8 +302,8 @@ func (s *NexusOTELSuite) TestWorkerOperation() {
 			Kind:        oteltrace.SpanKindClient,
 			URLPath:     operationURLPath,
 			NexusAttrs: map[string]any{
-				"nexus.namespace":  env.Namespace().String(),
-				"nexus.request_id": request.requestID,
+				telemetry.NexusNamespaceKey: env.Namespace().String(),
+				telemetry.NexusRequestIDKey: request.requestID,
 			},
 		},
 		{
@@ -315,10 +315,10 @@ func (s *NexusOTELSuite) TestWorkerOperation() {
 			Kind:         oteltrace.SpanKindServer,
 			URLPath:      operationURLPath,
 			NexusAttrs: map[string]any{
-				"nexus.endpoint":   endpoint.GetSpec().GetName(),
-				"nexus.operation":  operation.Name(),
-				"nexus.request_id": request.requestID,
-				"nexus.service":    service.Name,
+				telemetry.NexusEndpointKey:  endpoint.GetSpec().GetName(),
+				telemetry.NexusOperationKey: operation.Name(),
+				telemetry.NexusRequestIDKey: request.requestID,
+				telemetry.NexusServiceKey:   service.Name,
 			},
 		},
 	})
@@ -390,9 +390,9 @@ func (s *NexusOTELSuite) TestNamespaceAndTaskQueueDispatch() {
 		URLPath:     dispatchURL.Path + "/test-service/my-operation",
 		Status:      codes.Error,
 		NexusAttrs: map[string]any{
-			"nexus.operation":  "my-operation",
-			"nexus.request_id": requestID,
-			"nexus.service":    "test-service",
+			telemetry.NexusOperationKey: "my-operation",
+			telemetry.NexusRequestIDKey: requestID,
+			telemetry.NexusServiceKey:   "test-service",
 		},
 	}})
 	s.Require().Equal(traceID, httpSpans[0].SpanContext.TraceID().String())
@@ -487,7 +487,12 @@ func (s *NexusOTELSuite) nexusHTTPSpans(
 		var nexusAttrs map[string]any
 		for _, attr := range span.Attributes {
 			key := string(attr.Key)
-			if strings.HasPrefix(key, "nexus.") {
+			switch key {
+			case telemetry.NexusEndpointKey,
+				telemetry.NexusNamespaceKey,
+				telemetry.NexusOperationKey,
+				telemetry.NexusRequestIDKey,
+				telemetry.NexusServiceKey:
 				if nexusAttrs == nil {
 					nexusAttrs = make(map[string]any)
 				}
