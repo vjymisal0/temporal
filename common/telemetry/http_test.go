@@ -182,10 +182,10 @@ func TestNewHTTPClientTransport(t *testing.T) {
 
 		require.NotEmpty(t, traceparent)
 		attrs := traceEnv.spanAttrs()
-		require.NotContains(t, attrs, "temporalHttpRequestPayload")
-		require.NotContains(t, attrs, "temporalHttpResponsePayload")
-		require.NotContains(t, attrs, "temporalHttpRequestHeader.request-header")
-		require.NotContains(t, attrs, "temporalHttpResponseHeader.response-header")
+		require.NotContains(t, attrs, "http.request.payload")
+		require.NotContains(t, attrs, "http.response.payload")
+		require.NotContains(t, attrs, "http.request.headers.request-header")
+		require.NotContains(t, attrs, "http.response.headers.response-header")
 	})
 
 	// Callers can add domain attributes without coupling HTTP instrumentation to their domain.
@@ -278,16 +278,16 @@ func TestNewHTTPClientTransport(t *testing.T) {
 			require.NoError(t, resp.Body.Close())
 
 			require.Equal(t, map[string]any{
-				"temporalHttpRequestHeader.request-header":   []string{"request-value"},
-				"temporalHttpRequestHeader.traceparent":      []string{"00-0102030405060708090a0b0c0d0e0f10-0102030405060708-01"},
-				"http.request.method":                        "POST",
-				"temporalHttpRequestPayload":                 requestPayload,
-				"temporalHttpResponseHeader.response-header": []string{"response-value"},
-				"temporalHttpResponsePayload":                responsePayload,
-				"http.response.status_code":                  int64(http.StatusOK),
-				"network.protocol.version":                   "1.1",
-				"server.address":                             "example.com",
-				"url.full":                                   "http://example.com",
+				"http.request.headers.request-header":   []string{"request-value"},
+				"http.request.headers.traceparent":      []string{"00-0102030405060708090a0b0c0d0e0f10-0102030405060708-01"},
+				"http.request.method":                   "POST",
+				"http.request.payload":                  requestPayload,
+				"http.response.headers.response-header": []string{"response-value"},
+				"http.response.payload":                 responsePayload,
+				"http.response.status_code":             int64(http.StatusOK),
+				"network.protocol.version":              "1.1",
+				"server.address":                        "example.com",
+				"url.full":                              "http://example.com",
 			}, traceEnv.spanAttrs())
 		})
 
@@ -347,7 +347,7 @@ func TestNewHTTPClientTransport(t *testing.T) {
 			require.NoError(t, resp.Body.Close())
 
 			attrs := traceEnv.spanAttrs()
-			require.Equal(t, `{"ok":true}`, attrs["temporalHttpResponsePayload"])
+			require.Equal(t, `{"ok":true}`, attrs["http.response.payload"])
 		})
 
 		// Instrumentation must not consume a streaming response before application code reads it.
@@ -406,8 +406,8 @@ func TestNewHTTPClientTransport(t *testing.T) {
 			require.NoError(t, resp.Body.Close())
 
 			attrs := traceEnv.spanAttrs()
-			require.Equal(t, requestPayload, attrs["temporalHttpRequestPayload"])
-			require.Equal(t, responsePayload, attrs["temporalHttpResponsePayload"])
+			require.Equal(t, requestPayload, attrs["http.request.payload"])
+			require.Equal(t, responsePayload, attrs["http.response.payload"])
 		})
 
 		// Wrapping the request body must not mask errors returned by the original body.
@@ -491,10 +491,10 @@ func TestNewHTTPHandler(t *testing.T) {
 		require.Equal(t, "response body", rec.Body.String())
 
 		attrs := traceEnv.spanAttrs()
-		require.NotContains(t, attrs, "temporalHttpRequestPayload")
-		require.NotContains(t, attrs, "temporalHttpResponsePayload")
-		require.NotContains(t, attrs, "temporalHttpRequestHeader.request-header")
-		require.NotContains(t, attrs, "temporalHttpResponseHeader.response-header")
+		require.NotContains(t, attrs, "http.request.payload")
+		require.NotContains(t, attrs, "http.response.payload")
+		require.NotContains(t, attrs, "http.request.headers.request-header")
+		require.NotContains(t, attrs, "http.response.headers.response-header")
 	})
 
 	// Debug mode adds diagnostic HTTP headers and payloads to server spans.
@@ -552,20 +552,20 @@ func TestNewHTTPHandler(t *testing.T) {
 			require.Equal(t, responsePayload, rec.Body.String())
 
 			require.Equal(t, map[string]any{
-				"client.address":                             "192.0.2.1",
-				"http.request.body.size":                     int64(len(requestPayload)),
-				"temporalHttpRequestHeader.request-header":   []string{"request-value"},
-				"http.request.method":                        "POST",
-				"temporalHttpRequestPayload":                 requestPayload,
-				"http.response.body.size":                    int64(len(responsePayload)),
-				"temporalHttpResponseHeader.response-header": []string{"response-value"},
-				"temporalHttpResponsePayload":                responsePayload,
-				"http.response.status_code":                  int64(http.StatusOK),
-				"network.peer.address":                       "192.0.2.1",
-				"network.peer.port":                          int64(1234),
-				"network.protocol.version":                   "1.1",
-				"server.address":                             "example.com",
-				"url.scheme":                                 "http",
+				"client.address":                        "192.0.2.1",
+				"http.request.body.size":                int64(len(requestPayload)),
+				"http.request.headers.request-header":   []string{"request-value"},
+				"http.request.method":                   "POST",
+				"http.request.payload":                  requestPayload,
+				"http.response.body.size":               int64(len(responsePayload)),
+				"http.response.headers.response-header": []string{"response-value"},
+				"http.response.payload":                 responsePayload,
+				"http.response.status_code":             int64(http.StatusOK),
+				"network.peer.address":                  "192.0.2.1",
+				"network.peer.port":                     int64(1234),
+				"network.protocol.version":              "1.1",
+				"server.address":                        "example.com",
+				"url.scheme":                            "http",
 			}, traceEnv.spanAttrs())
 		})
 
@@ -611,7 +611,7 @@ func TestNewHTTPHandler(t *testing.T) {
 			require.Equal(t, requestPayload, string(handlerPayload))
 
 			attrs := traceEnv.spanAttrs()
-			require.Equal(t, requestPayload, attrs["temporalHttpRequestPayload"])
+			require.Equal(t, requestPayload, attrs["http.request.payload"])
 		})
 
 		// io.Copy can use ReaderFrom and bypass the Write hook that tracks standard response size.
