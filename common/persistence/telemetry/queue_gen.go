@@ -47,14 +47,14 @@ func (d telemetryQueue) DeleteMessageFromDLQ(ctx context.Context, messageID int6
 		ctx,
 		"persistence.Queue/DeleteMessageFromDLQ",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("Queue"),
-			attribute.Key("persistence.method").String("DeleteMessageFromDLQ"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("Queue"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("DeleteMessageFromDLQ"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.Queue.DeleteMessageFromDLQ(ctx, messageID)
@@ -68,7 +68,7 @@ func (d telemetryQueue) DeleteMessageFromDLQ(ctx context.Context, messageID int6
 		if err != nil {
 			d.logger.Error("failed to serialize int64 for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -82,14 +82,14 @@ func (d telemetryQueue) DeleteMessagesBefore(ctx context.Context, messageID int6
 		ctx,
 		"persistence.Queue/DeleteMessagesBefore",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("Queue"),
-			attribute.Key("persistence.method").String("DeleteMessagesBefore"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("Queue"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("DeleteMessagesBefore"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.Queue.DeleteMessagesBefore(ctx, messageID)
@@ -103,7 +103,7 @@ func (d telemetryQueue) DeleteMessagesBefore(ctx context.Context, messageID int6
 		if err != nil {
 			d.logger.Error("failed to serialize int64 for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -117,14 +117,14 @@ func (d telemetryQueue) EnqueueMessage(ctx context.Context, blob *commonpb.DataB
 		ctx,
 		"persistence.Queue/EnqueueMessage",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("Queue"),
-			attribute.Key("persistence.method").String("EnqueueMessage"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("Queue"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("EnqueueMessage"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.Queue.EnqueueMessage(ctx, blob)
@@ -138,7 +138,7 @@ func (d telemetryQueue) EnqueueMessage(ctx context.Context, blob *commonpb.DataB
 		if err != nil {
 			d.logger.Error("failed to serialize *commonpb.DataBlob for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -152,14 +152,14 @@ func (d telemetryQueue) EnqueueMessageToDLQ(ctx context.Context, blob *commonpb.
 		ctx,
 		"persistence.Queue/EnqueueMessageToDLQ",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("Queue"),
-			attribute.Key("persistence.method").String("EnqueueMessageToDLQ"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("Queue"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("EnqueueMessageToDLQ"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	i1, err = d.Queue.EnqueueMessageToDLQ(ctx, blob)
@@ -173,14 +173,14 @@ func (d telemetryQueue) EnqueueMessageToDLQ(ctx context.Context, blob *commonpb.
 		if err != nil {
 			d.logger.Error("failed to serialize *commonpb.DataBlob for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 		responsePayload, err := json.MarshalIndent(i1, "", "    ")
 		if err != nil {
 			d.logger.Error("failed to serialize int64 for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.response.payload").String(string(responsePayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceResponsePayloadKey).String(string(responsePayload)))
 		}
 
 	}
@@ -194,14 +194,14 @@ func (d telemetryQueue) GetAckLevels(ctx context.Context) (ip1 *_sourcePersisten
 		ctx,
 		"persistence.Queue/GetAckLevels",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("Queue"),
-			attribute.Key("persistence.method").String("GetAckLevels"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("Queue"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("GetAckLevels"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.Queue.GetAckLevels(ctx)
@@ -215,7 +215,7 @@ func (d telemetryQueue) GetAckLevels(ctx context.Context) (ip1 *_sourcePersisten
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalQueueMetadata for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.response.payload").String(string(responsePayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceResponsePayloadKey).String(string(responsePayload)))
 		}
 
 	}
@@ -229,14 +229,14 @@ func (d telemetryQueue) GetDLQAckLevels(ctx context.Context) (ip1 *_sourcePersis
 		ctx,
 		"persistence.Queue/GetDLQAckLevels",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("Queue"),
-			attribute.Key("persistence.method").String("GetDLQAckLevels"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("Queue"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("GetDLQAckLevels"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.Queue.GetDLQAckLevels(ctx)
@@ -250,7 +250,7 @@ func (d telemetryQueue) GetDLQAckLevels(ctx context.Context) (ip1 *_sourcePersis
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalQueueMetadata for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.response.payload").String(string(responsePayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceResponsePayloadKey).String(string(responsePayload)))
 		}
 
 	}
@@ -264,14 +264,14 @@ func (d telemetryQueue) Init(ctx context.Context, blob *commonpb.DataBlob) (err 
 		ctx,
 		"persistence.Queue/Init",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("Queue"),
-			attribute.Key("persistence.method").String("Init"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("Queue"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("Init"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.Queue.Init(ctx, blob)
@@ -285,7 +285,7 @@ func (d telemetryQueue) Init(ctx context.Context, blob *commonpb.DataBlob) (err 
 		if err != nil {
 			d.logger.Error("failed to serialize *commonpb.DataBlob for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -299,14 +299,14 @@ func (d telemetryQueue) RangeDeleteMessagesFromDLQ(ctx context.Context, firstMes
 		ctx,
 		"persistence.Queue/RangeDeleteMessagesFromDLQ",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("Queue"),
-			attribute.Key("persistence.method").String("RangeDeleteMessagesFromDLQ"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("Queue"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("RangeDeleteMessagesFromDLQ"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.Queue.RangeDeleteMessagesFromDLQ(ctx, firstMessageID, lastMessageID)
@@ -320,7 +320,7 @@ func (d telemetryQueue) RangeDeleteMessagesFromDLQ(ctx context.Context, firstMes
 		if err != nil {
 			d.logger.Error("failed to serialize int64 for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -334,14 +334,14 @@ func (d telemetryQueue) ReadMessages(ctx context.Context, lastMessageID int64, m
 		ctx,
 		"persistence.Queue/ReadMessages",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("Queue"),
-			attribute.Key("persistence.method").String("ReadMessages"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("Queue"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("ReadMessages"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	qpa1, err = d.Queue.ReadMessages(ctx, lastMessageID, maxCount)
@@ -355,14 +355,14 @@ func (d telemetryQueue) ReadMessages(ctx context.Context, lastMessageID int64, m
 		if err != nil {
 			d.logger.Error("failed to serialize int64 for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 		responsePayload, err := json.MarshalIndent(qpa1, "", "    ")
 		if err != nil {
 			d.logger.Error("failed to serialize []*_sourcePersistence.QueueMessage for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.response.payload").String(string(responsePayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceResponsePayloadKey).String(string(responsePayload)))
 		}
 
 	}
@@ -376,14 +376,14 @@ func (d telemetryQueue) ReadMessagesFromDLQ(ctx context.Context, firstMessageID 
 		ctx,
 		"persistence.Queue/ReadMessagesFromDLQ",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("Queue"),
-			attribute.Key("persistence.method").String("ReadMessagesFromDLQ"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("Queue"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("ReadMessagesFromDLQ"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	qpa1, ba1, err = d.Queue.ReadMessagesFromDLQ(ctx, firstMessageID, lastMessageID, pageSize, pageToken)
@@ -397,14 +397,14 @@ func (d telemetryQueue) ReadMessagesFromDLQ(ctx context.Context, firstMessageID 
 		if err != nil {
 			d.logger.Error("failed to serialize int64 for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 		responsePayload, err := json.MarshalIndent(qpa1, "", "    ")
 		if err != nil {
 			d.logger.Error("failed to serialize []*_sourcePersistence.QueueMessage for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.response.payload").String(string(responsePayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceResponsePayloadKey).String(string(responsePayload)))
 		}
 
 	}
@@ -418,14 +418,14 @@ func (d telemetryQueue) UpdateAckLevel(ctx context.Context, metadata *_sourcePer
 		ctx,
 		"persistence.Queue/UpdateAckLevel",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("Queue"),
-			attribute.Key("persistence.method").String("UpdateAckLevel"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("Queue"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("UpdateAckLevel"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.Queue.UpdateAckLevel(ctx, metadata)
@@ -439,7 +439,7 @@ func (d telemetryQueue) UpdateAckLevel(ctx context.Context, metadata *_sourcePer
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalQueueMetadata for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -453,14 +453,14 @@ func (d telemetryQueue) UpdateDLQAckLevel(ctx context.Context, metadata *_source
 		ctx,
 		"persistence.Queue/UpdateDLQAckLevel",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("Queue"),
-			attribute.Key("persistence.method").String("UpdateDLQAckLevel"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("Queue"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("UpdateDLQAckLevel"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.Queue.UpdateDLQAckLevel(ctx, metadata)
@@ -474,7 +474,7 @@ func (d telemetryQueue) UpdateDLQAckLevel(ctx context.Context, metadata *_source
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalQueueMetadata for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}

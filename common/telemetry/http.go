@@ -199,11 +199,11 @@ func (t *debugHTTPClientSpanTransport) RoundTrip(req *http.Request) (*http.Respo
 	if !span.IsRecording() {
 		return t.rt.RoundTrip(req)
 	}
-	span.annotateHeaders("http.request.headers.", req.Header)
+	span.annotateHeaders(httpRequestHeaderPrefix, req.Header)
 	req.Body, _ = newPayloadCapturingReadCloser(
 		req.Body,
 		req.ContentLength,
-		span.payloadAnnotator("http.request.payload"),
+		span.payloadAnnotator(httpRequestPayloadKey),
 	)
 
 	resp, err := t.rt.RoundTrip(req)
@@ -211,12 +211,12 @@ func (t *debugHTTPClientSpanTransport) RoundTrip(req *http.Request) (*http.Respo
 		return resp, err
 	}
 
-	span.annotateHeaders("http.response.headers.", resp.Header)
+	span.annotateHeaders(httpResponseHeaderPrefix, resp.Header)
 	var responseCapture *payloadCapture
 	resp.Body, responseCapture = newPayloadCapturingReadCloser(
 		resp.Body,
 		resp.ContentLength,
-		span.payloadAnnotator("http.response.payload"),
+		span.payloadAnnotator(httpResponsePayloadKey),
 	)
 	if state, ok := req.Context().Value(debugHTTPClientRequestStateKey{}).(*debugHTTPClientRequestState); ok && responseCapture != nil {
 		state.finalizeResponse = responseCapture.finalize
@@ -235,15 +235,15 @@ func (h *debugHTTPHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.handler.ServeHTTP(w, r)
 		return
 	}
-	span.annotateHeaders("http.request.headers.", r.Header)
+	span.annotateHeaders(httpRequestHeaderPrefix, r.Header)
 	var requestCapture *payloadCapture
 	r.Body, requestCapture = newPayloadCapturingReadCloser(
 		r.Body,
 		r.ContentLength,
-		span.payloadAnnotator("http.request.payload"),
+		span.payloadAnnotator(httpRequestPayloadKey),
 	)
 
-	responseBody := payloadCapture{onFinalize: span.payloadAnnotator("http.response.payload")}
+	responseBody := payloadCapture{onFinalize: span.payloadAnnotator(httpResponsePayloadKey)}
 	w = newPayloadCapturingResponseWriter(w, &responseBody)
 
 	h.handler.ServeHTTP(w, r)
@@ -253,7 +253,7 @@ func (h *debugHTTPHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		requestCapture.finalize()
 	}
 
-	span.annotateHeaders("http.response.headers.", w.Header())
+	span.annotateHeaders(httpResponseHeaderPrefix, w.Header())
 	responseBody.finalize()
 }
 

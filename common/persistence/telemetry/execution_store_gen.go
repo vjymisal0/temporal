@@ -46,14 +46,14 @@ func (d telemetryExecutionStore) AddHistoryTasks(ctx context.Context, request *_
 		ctx,
 		"persistence.ExecutionStore/AddHistoryTasks",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("AddHistoryTasks"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("AddHistoryTasks"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.AddHistoryTasks(ctx, request)
@@ -67,7 +67,7 @@ func (d telemetryExecutionStore) AddHistoryTasks(ctx context.Context, request *_
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalAddHistoryTasksRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -81,14 +81,14 @@ func (d telemetryExecutionStore) AppendHistoryNodes(ctx context.Context, request
 		ctx,
 		"persistence.ExecutionStore/AppendHistoryNodes",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("AppendHistoryNodes"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("AppendHistoryNodes"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.AppendHistoryNodes(ctx, request)
@@ -102,7 +102,7 @@ func (d telemetryExecutionStore) AppendHistoryNodes(ctx context.Context, request
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalAppendHistoryNodesRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -116,14 +116,14 @@ func (d telemetryExecutionStore) CompleteHistoryTask(ctx context.Context, reques
 		ctx,
 		"persistence.ExecutionStore/CompleteHistoryTask",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("CompleteHistoryTask"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("CompleteHistoryTask"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.CompleteHistoryTask(ctx, request)
@@ -137,7 +137,7 @@ func (d telemetryExecutionStore) CompleteHistoryTask(ctx context.Context, reques
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.CompleteHistoryTaskRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -151,14 +151,14 @@ func (d telemetryExecutionStore) ConflictResolveWorkflowExecution(ctx context.Co
 		ctx,
 		"persistence.ExecutionStore/ConflictResolveWorkflowExecution",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("ConflictResolveWorkflowExecution"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("ConflictResolveWorkflowExecution"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.ConflictResolveWorkflowExecution(ctx, request)
@@ -172,7 +172,7 @@ func (d telemetryExecutionStore) ConflictResolveWorkflowExecution(ctx context.Co
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalConflictResolveWorkflowExecutionRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -186,14 +186,14 @@ func (d telemetryExecutionStore) CreateWorkflowExecution(ctx context.Context, re
 		ctx,
 		"persistence.ExecutionStore/CreateWorkflowExecution",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("CreateWorkflowExecution"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("CreateWorkflowExecution"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ExecutionStore.CreateWorkflowExecution(ctx, request)
@@ -207,14 +207,14 @@ func (d telemetryExecutionStore) CreateWorkflowExecution(ctx context.Context, re
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalCreateWorkflowExecutionRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 		responsePayload, err := json.MarshalIndent(ip1, "", "    ")
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalCreateWorkflowExecutionResponse for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.response.payload").String(string(responsePayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceResponsePayloadKey).String(string(responsePayload)))
 		}
 
 	}
@@ -228,14 +228,14 @@ func (d telemetryExecutionStore) DeleteCurrentWorkflowExecution(ctx context.Cont
 		ctx,
 		"persistence.ExecutionStore/DeleteCurrentWorkflowExecution",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("DeleteCurrentWorkflowExecution"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("DeleteCurrentWorkflowExecution"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.DeleteCurrentWorkflowExecution(ctx, request)
@@ -249,7 +249,7 @@ func (d telemetryExecutionStore) DeleteCurrentWorkflowExecution(ctx context.Cont
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.DeleteCurrentWorkflowExecutionRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -263,14 +263,14 @@ func (d telemetryExecutionStore) DeleteHistoryBranch(ctx context.Context, reques
 		ctx,
 		"persistence.ExecutionStore/DeleteHistoryBranch",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("DeleteHistoryBranch"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("DeleteHistoryBranch"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.DeleteHistoryBranch(ctx, request)
@@ -284,7 +284,7 @@ func (d telemetryExecutionStore) DeleteHistoryBranch(ctx context.Context, reques
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalDeleteHistoryBranchRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -298,14 +298,14 @@ func (d telemetryExecutionStore) DeleteHistoryNodes(ctx context.Context, request
 		ctx,
 		"persistence.ExecutionStore/DeleteHistoryNodes",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("DeleteHistoryNodes"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("DeleteHistoryNodes"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.DeleteHistoryNodes(ctx, request)
@@ -319,7 +319,7 @@ func (d telemetryExecutionStore) DeleteHistoryNodes(ctx context.Context, request
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalDeleteHistoryNodesRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -333,14 +333,14 @@ func (d telemetryExecutionStore) DeleteReplicationTaskFromDLQ(ctx context.Contex
 		ctx,
 		"persistence.ExecutionStore/DeleteReplicationTaskFromDLQ",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("DeleteReplicationTaskFromDLQ"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("DeleteReplicationTaskFromDLQ"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.DeleteReplicationTaskFromDLQ(ctx, request)
@@ -354,7 +354,7 @@ func (d telemetryExecutionStore) DeleteReplicationTaskFromDLQ(ctx context.Contex
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.DeleteReplicationTaskFromDLQRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -368,14 +368,14 @@ func (d telemetryExecutionStore) DeleteWorkflowExecution(ctx context.Context, re
 		ctx,
 		"persistence.ExecutionStore/DeleteWorkflowExecution",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("DeleteWorkflowExecution"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("DeleteWorkflowExecution"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.DeleteWorkflowExecution(ctx, request)
@@ -389,7 +389,7 @@ func (d telemetryExecutionStore) DeleteWorkflowExecution(ctx context.Context, re
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.DeleteWorkflowExecutionRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -403,14 +403,14 @@ func (d telemetryExecutionStore) ForkHistoryBranch(ctx context.Context, request 
 		ctx,
 		"persistence.ExecutionStore/ForkHistoryBranch",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("ForkHistoryBranch"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("ForkHistoryBranch"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.ForkHistoryBranch(ctx, request)
@@ -424,7 +424,7 @@ func (d telemetryExecutionStore) ForkHistoryBranch(ctx context.Context, request 
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalForkHistoryBranchRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -438,14 +438,14 @@ func (d telemetryExecutionStore) GetAllHistoryTreeBranches(ctx context.Context, 
 		ctx,
 		"persistence.ExecutionStore/GetAllHistoryTreeBranches",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("GetAllHistoryTreeBranches"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("GetAllHistoryTreeBranches"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ExecutionStore.GetAllHistoryTreeBranches(ctx, request)
@@ -459,14 +459,14 @@ func (d telemetryExecutionStore) GetAllHistoryTreeBranches(ctx context.Context, 
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.GetAllHistoryTreeBranchesRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 		responsePayload, err := json.MarshalIndent(ip1, "", "    ")
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalGetAllHistoryTreeBranchesResponse for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.response.payload").String(string(responsePayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceResponsePayloadKey).String(string(responsePayload)))
 		}
 
 	}
@@ -480,14 +480,14 @@ func (d telemetryExecutionStore) GetCurrentExecution(ctx context.Context, reques
 		ctx,
 		"persistence.ExecutionStore/GetCurrentExecution",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("GetCurrentExecution"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("GetCurrentExecution"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ExecutionStore.GetCurrentExecution(ctx, request)
@@ -501,14 +501,14 @@ func (d telemetryExecutionStore) GetCurrentExecution(ctx context.Context, reques
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.GetCurrentExecutionRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 		responsePayload, err := json.MarshalIndent(ip1, "", "    ")
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalGetCurrentExecutionResponse for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.response.payload").String(string(responsePayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceResponsePayloadKey).String(string(responsePayload)))
 		}
 
 	}
@@ -522,14 +522,14 @@ func (d telemetryExecutionStore) GetHistoryTasks(ctx context.Context, request *_
 		ctx,
 		"persistence.ExecutionStore/GetHistoryTasks",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("GetHistoryTasks"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("GetHistoryTasks"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ExecutionStore.GetHistoryTasks(ctx, request)
@@ -543,14 +543,14 @@ func (d telemetryExecutionStore) GetHistoryTasks(ctx context.Context, request *_
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.GetHistoryTasksRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 		responsePayload, err := json.MarshalIndent(ip1, "", "    ")
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalGetHistoryTasksResponse for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.response.payload").String(string(responsePayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceResponsePayloadKey).String(string(responsePayload)))
 		}
 
 	}
@@ -564,14 +564,14 @@ func (d telemetryExecutionStore) GetHistoryTreeContainingBranch(ctx context.Cont
 		ctx,
 		"persistence.ExecutionStore/GetHistoryTreeContainingBranch",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("GetHistoryTreeContainingBranch"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("GetHistoryTreeContainingBranch"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ExecutionStore.GetHistoryTreeContainingBranch(ctx, request)
@@ -585,14 +585,14 @@ func (d telemetryExecutionStore) GetHistoryTreeContainingBranch(ctx context.Cont
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalGetHistoryTreeContainingBranchRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 		responsePayload, err := json.MarshalIndent(ip1, "", "    ")
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalGetHistoryTreeContainingBranchResponse for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.response.payload").String(string(responsePayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceResponsePayloadKey).String(string(responsePayload)))
 		}
 
 	}
@@ -606,14 +606,14 @@ func (d telemetryExecutionStore) GetReplicationTasksFromDLQ(ctx context.Context,
 		ctx,
 		"persistence.ExecutionStore/GetReplicationTasksFromDLQ",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("GetReplicationTasksFromDLQ"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("GetReplicationTasksFromDLQ"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ExecutionStore.GetReplicationTasksFromDLQ(ctx, request)
@@ -627,14 +627,14 @@ func (d telemetryExecutionStore) GetReplicationTasksFromDLQ(ctx context.Context,
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.GetReplicationTasksFromDLQRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 		responsePayload, err := json.MarshalIndent(ip1, "", "    ")
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalGetReplicationTasksFromDLQResponse for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.response.payload").String(string(responsePayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceResponsePayloadKey).String(string(responsePayload)))
 		}
 
 	}
@@ -648,14 +648,14 @@ func (d telemetryExecutionStore) GetWorkflowExecution(ctx context.Context, reque
 		ctx,
 		"persistence.ExecutionStore/GetWorkflowExecution",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("GetWorkflowExecution"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("GetWorkflowExecution"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ExecutionStore.GetWorkflowExecution(ctx, request)
@@ -669,14 +669,14 @@ func (d telemetryExecutionStore) GetWorkflowExecution(ctx context.Context, reque
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.GetWorkflowExecutionRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 		responsePayload, err := json.MarshalIndent(ip1, "", "    ")
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalGetWorkflowExecutionResponse for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.response.payload").String(string(responsePayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceResponsePayloadKey).String(string(responsePayload)))
 		}
 
 	}
@@ -690,14 +690,14 @@ func (d telemetryExecutionStore) IsReplicationDLQEmpty(ctx context.Context, requ
 		ctx,
 		"persistence.ExecutionStore/IsReplicationDLQEmpty",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("IsReplicationDLQEmpty"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("IsReplicationDLQEmpty"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	b1, err = d.ExecutionStore.IsReplicationDLQEmpty(ctx, request)
@@ -711,14 +711,14 @@ func (d telemetryExecutionStore) IsReplicationDLQEmpty(ctx context.Context, requ
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.GetReplicationTasksFromDLQRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 		responsePayload, err := json.MarshalIndent(b1, "", "    ")
 		if err != nil {
 			d.logger.Error("failed to serialize bool for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.response.payload").String(string(responsePayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceResponsePayloadKey).String(string(responsePayload)))
 		}
 
 	}
@@ -732,14 +732,14 @@ func (d telemetryExecutionStore) ListConcreteExecutions(ctx context.Context, req
 		ctx,
 		"persistence.ExecutionStore/ListConcreteExecutions",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("ListConcreteExecutions"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("ListConcreteExecutions"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ExecutionStore.ListConcreteExecutions(ctx, request)
@@ -753,14 +753,14 @@ func (d telemetryExecutionStore) ListConcreteExecutions(ctx context.Context, req
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.ListConcreteExecutionsRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 		responsePayload, err := json.MarshalIndent(ip1, "", "    ")
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalListConcreteExecutionsResponse for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.response.payload").String(string(responsePayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceResponsePayloadKey).String(string(responsePayload)))
 		}
 
 	}
@@ -774,14 +774,14 @@ func (d telemetryExecutionStore) PutReplicationTaskToDLQ(ctx context.Context, re
 		ctx,
 		"persistence.ExecutionStore/PutReplicationTaskToDLQ",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("PutReplicationTaskToDLQ"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("PutReplicationTaskToDLQ"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.PutReplicationTaskToDLQ(ctx, request)
@@ -795,7 +795,7 @@ func (d telemetryExecutionStore) PutReplicationTaskToDLQ(ctx context.Context, re
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.PutReplicationTaskToDLQRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -809,14 +809,14 @@ func (d telemetryExecutionStore) RangeCompleteHistoryTasks(ctx context.Context, 
 		ctx,
 		"persistence.ExecutionStore/RangeCompleteHistoryTasks",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("RangeCompleteHistoryTasks"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("RangeCompleteHistoryTasks"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.RangeCompleteHistoryTasks(ctx, request)
@@ -830,7 +830,7 @@ func (d telemetryExecutionStore) RangeCompleteHistoryTasks(ctx context.Context, 
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.RangeCompleteHistoryTasksRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -844,14 +844,14 @@ func (d telemetryExecutionStore) RangeDeleteReplicationTaskFromDLQ(ctx context.C
 		ctx,
 		"persistence.ExecutionStore/RangeDeleteReplicationTaskFromDLQ",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("RangeDeleteReplicationTaskFromDLQ"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("RangeDeleteReplicationTaskFromDLQ"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.RangeDeleteReplicationTaskFromDLQ(ctx, request)
@@ -865,7 +865,7 @@ func (d telemetryExecutionStore) RangeDeleteReplicationTaskFromDLQ(ctx context.C
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.RangeDeleteReplicationTaskFromDLQRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -879,14 +879,14 @@ func (d telemetryExecutionStore) ReadHistoryBranch(ctx context.Context, request 
 		ctx,
 		"persistence.ExecutionStore/ReadHistoryBranch",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("ReadHistoryBranch"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("ReadHistoryBranch"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ExecutionStore.ReadHistoryBranch(ctx, request)
@@ -900,14 +900,14 @@ func (d telemetryExecutionStore) ReadHistoryBranch(ctx context.Context, request 
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalReadHistoryBranchRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 		responsePayload, err := json.MarshalIndent(ip1, "", "    ")
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalReadHistoryBranchResponse for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.response.payload").String(string(responsePayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceResponsePayloadKey).String(string(responsePayload)))
 		}
 
 	}
@@ -921,14 +921,14 @@ func (d telemetryExecutionStore) SetWorkflowExecution(ctx context.Context, reque
 		ctx,
 		"persistence.ExecutionStore/SetWorkflowExecution",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("SetWorkflowExecution"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("SetWorkflowExecution"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.SetWorkflowExecution(ctx, request)
@@ -942,7 +942,7 @@ func (d telemetryExecutionStore) SetWorkflowExecution(ctx context.Context, reque
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalSetWorkflowExecutionRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -956,14 +956,14 @@ func (d telemetryExecutionStore) UpdateWorkflowExecution(ctx context.Context, re
 		ctx,
 		"persistence.ExecutionStore/UpdateWorkflowExecution",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("ExecutionStore"),
-			attribute.Key("persistence.method").String("UpdateWorkflowExecution"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("ExecutionStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("UpdateWorkflowExecution"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.UpdateWorkflowExecution(ctx, request)
@@ -977,7 +977,7 @@ func (d telemetryExecutionStore) UpdateWorkflowExecution(ctx context.Context, re
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalUpdateWorkflowExecutionRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}

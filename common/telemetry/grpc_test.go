@@ -31,8 +31,8 @@ func TestServerStatsHandler(t *testing.T) {
 		require.Equal(t, "RUN-ID", spanAttrsByKey["temporalRunID"].Value.AsString())
 
 		// ensure no debug attributes are present
-		require.NotContains(t, spanAttrsByKey, "rpc.request.payload")
-		require.NotContains(t, spanAttrsByKey, "rpc.response.payload")
+		require.NotContains(t, spanAttrsByKey, "temporalRpcRequestPayload")
+		require.NotContains(t, spanAttrsByKey, "temporalRpcResponsePayload")
 	})
 
 	t.Run("annotate span with Nexus operation tags", func(t *testing.T) {
@@ -56,8 +56,8 @@ func TestServerStatsHandler(t *testing.T) {
 
 		require.JSONEq(t,
 			`{"workflowExecution":{"workflowId":"WF-ID","runId":"RUN-ID"}}`,
-			toStr(t, spanAttrsByKey["rpc.request.payload"].Value))
-		require.Equal(t, "{}", spanAttrsByKey["rpc.response.payload"].Value.AsString())
+			toStr(t, spanAttrsByKey["temporalRpcRequestPayload"].Value))
+		require.Equal(t, "{}", spanAttrsByKey["temporalRpcResponsePayload"].Value.AsString())
 	})
 
 	t.Run("annotate span with response error payload in debug mode", func(t *testing.T) {
@@ -67,7 +67,7 @@ func TestServerStatsHandler(t *testing.T) {
 
 		require.JSONEq(t,
 			`{"code":13,"message":"Something went wrong"}`,
-			toStr(t, spanAttrsByKey["rpc.response.error"].Value))
+			toStr(t, spanAttrsByKey["temporalRpcResponseError"].Value))
 	})
 
 	t.Run("skip if noop trace provider", func(t *testing.T) {

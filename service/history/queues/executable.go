@@ -306,8 +306,8 @@ func (e *executableImpl) Execute() (retErr error) {
 			chasmAttributes,
 			attribute.Key(idKey).String(entityID),
 			attribute.Key(telemetry.RunIDKey).String(e.GetRunID()),
-			attribute.Key("queue.task.type").String(e.GetType().String()),
-			attribute.Key("queue.task.id").Int64(e.GetTaskID()),
+			attribute.Key(telemetry.QueueTaskTypeKey).String(e.GetType().String()),
+			attribute.Key(telemetry.QueueTaskIDKey).Int64(e.GetTaskID()),
 		)
 		ctx, span = e.tracer.Start(
 			ctx,
@@ -319,7 +319,7 @@ func (e *executableImpl) Execute() (retErr error) {
 			if taskPayload, err := json.Marshal(e.GetTask()); err != nil {
 				e.logger.Error("failed to serialize task payload for OTEL span", tag.Error(err))
 			} else {
-				span.SetAttributes(attribute.Key("queue.task.payload").String(string(taskPayload)))
+				span.SetAttributes(attribute.Key(telemetry.QueueTaskPayloadKey).String(string(taskPayload)))
 			}
 		}
 

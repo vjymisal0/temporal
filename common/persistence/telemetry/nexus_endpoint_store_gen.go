@@ -46,14 +46,14 @@ func (d telemetryNexusEndpointStore) CreateOrUpdateNexusEndpoint(ctx context.Con
 		ctx,
 		"persistence.NexusEndpointStore/CreateOrUpdateNexusEndpoint",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("NexusEndpointStore"),
-			attribute.Key("persistence.method").String("CreateOrUpdateNexusEndpoint"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("NexusEndpointStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("CreateOrUpdateNexusEndpoint"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.NexusEndpointStore.CreateOrUpdateNexusEndpoint(ctx, request)
@@ -67,7 +67,7 @@ func (d telemetryNexusEndpointStore) CreateOrUpdateNexusEndpoint(ctx context.Con
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalCreateOrUpdateNexusEndpointRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -81,14 +81,14 @@ func (d telemetryNexusEndpointStore) DeleteNexusEndpoint(ctx context.Context, re
 		ctx,
 		"persistence.NexusEndpointStore/DeleteNexusEndpoint",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("NexusEndpointStore"),
-			attribute.Key("persistence.method").String("DeleteNexusEndpoint"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("NexusEndpointStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("DeleteNexusEndpoint"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.NexusEndpointStore.DeleteNexusEndpoint(ctx, request)
@@ -102,7 +102,7 @@ func (d telemetryNexusEndpointStore) DeleteNexusEndpoint(ctx context.Context, re
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.DeleteNexusEndpointRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 	}
@@ -116,14 +116,14 @@ func (d telemetryNexusEndpointStore) GetNexusEndpoint(ctx context.Context, reque
 		ctx,
 		"persistence.NexusEndpointStore/GetNexusEndpoint",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("NexusEndpointStore"),
-			attribute.Key("persistence.method").String("GetNexusEndpoint"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("NexusEndpointStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("GetNexusEndpoint"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.NexusEndpointStore.GetNexusEndpoint(ctx, request)
@@ -137,14 +137,14 @@ func (d telemetryNexusEndpointStore) GetNexusEndpoint(ctx context.Context, reque
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.GetNexusEndpointRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 		responsePayload, err := json.MarshalIndent(ip1, "", "    ")
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalNexusEndpoint for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.response.payload").String(string(responsePayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceResponsePayloadKey).String(string(responsePayload)))
 		}
 
 	}
@@ -158,14 +158,14 @@ func (d telemetryNexusEndpointStore) ListNexusEndpoints(ctx context.Context, req
 		ctx,
 		"persistence.NexusEndpointStore/ListNexusEndpoints",
 		trace.WithAttributes(
-			attribute.Key("persistence.store").String("NexusEndpointStore"),
-			attribute.Key("persistence.method").String("ListNexusEndpoints"),
+			attribute.Key(telemetry.PersistenceStoreKey).String("NexusEndpointStore"),
+			attribute.Key(telemetry.PersistenceMethodKey).String("ListNexusEndpoints"),
 		))
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.NexusEndpointStore.ListNexusEndpoints(ctx, request)
@@ -179,14 +179,14 @@ func (d telemetryNexusEndpointStore) ListNexusEndpoints(ctx context.Context, req
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.ListNexusEndpointsRequest for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.request.payload").String(string(requestPayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceRequestPayloadKey).String(string(requestPayload)))
 		}
 
 		responsePayload, err := json.MarshalIndent(ip1, "", "    ")
 		if err != nil {
 			d.logger.Error("failed to serialize *_sourcePersistence.InternalListNexusEndpointsResponse for OTEL span", tag.Error(err))
 		} else {
-			span.SetAttributes(attribute.Key("persistence.response.payload").String(string(responsePayload)))
+			span.SetAttributes(attribute.Key(telemetry.PersistenceResponsePayloadKey).String(string(responsePayload)))
 		}
 
 	}
