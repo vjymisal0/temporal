@@ -10,9 +10,11 @@ const (
 	ComponentQueueVisibility = "queue.visibility"
 	ComponentUpdateRegistry  = "update.registry"
 
-	WorkflowIDKey = "temporalWorkflowID"
-	BusinessIDKey = "temporalBusinessID"
-	RunIDKey      = "temporalRunID"
+	WorkflowIDKey  = "temporalWorkflowID"
+	BusinessIDKey  = "temporalBusinessID"
+	RunIDKey       = "temporalRunID"
+	NamespaceIDKey = "temporalNamespaceID"
+	ArchetypeIDKey = "temporalArchetypeID"
 
 	NexusEndpointKey  = "nexus.endpoint"
 	NexusNamespaceKey = "nexus.namespace"
