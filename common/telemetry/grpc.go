@@ -110,7 +110,7 @@ func (c *customServerStatsHandler) HandleRPC(ctx context.Context, stat stats.RPC
 			statusErr, ok := status.FromError(s.Error)
 			if ok && statusErr != nil {
 				payload, _ := protojson.Marshal(statusErr.Proto())
-				span.SetAttributes(attribute.Key(rpcResponseErrorKey).String(string(payload)))
+				span.SetAttributes(attribute.Key("rpc.response.error").String(string(payload)))
 			}
 		}
 	}
@@ -122,11 +122,11 @@ func (c *customServerStatsHandler) HandleRPC(ctx context.Context, stat stats.RPC
 		if c.isDebug {
 			span := trace.SpanFromContext(ctx)
 			for key, values := range s.Header {
-				span.SetAttributes(attribute.StringSlice(rpcRequestHeaderPrefix+key, values))
+				span.SetAttributes(attribute.StringSlice("rpc.request.headers."+key, values))
 			}
 			if deadline, ok := ctx.Deadline(); ok {
-				span.SetAttributes(attribute.String(rpcRequestDeadlineKey, deadline.Format(time.RFC3339Nano)))
-				span.SetAttributes(attribute.String(rpcRequestTimeoutKey, time.Until(deadline).String()))
+				span.SetAttributes(attribute.String("rpc.request.deadline", deadline.Format(time.RFC3339Nano)))
+				span.SetAttributes(attribute.String("rpc.request.timeout", time.Until(deadline).String()))
 			}
 		}
 	case *stats.InPayload:
@@ -139,14 +139,14 @@ func (c *customServerStatsHandler) HandleRPC(ctx context.Context, stat stats.RPC
 			reqMsg := s.Payload.(proto.Message)
 			payload, _ := protojson.Marshal(reqMsg)
 			msgType := string(proto.MessageName(reqMsg).Name())
-			span.SetAttributes(attribute.Key(rpcRequestPayloadKey).String(string(payload)))
-			span.SetAttributes(attribute.Key(rpcRequestTypeKey).String(msgType))
+			span.SetAttributes(attribute.Key("rpc.request.payload").String(string(payload)))
+			span.SetAttributes(attribute.Key("rpc.request.type").String(msgType))
 		}
 	case *stats.OutHeader:
 		if c.isDebug {
 			span := trace.SpanFromContext(ctx)
 			for key, values := range s.Header {
-				span.SetAttributes(attribute.StringSlice(rpcResponseHeaderPrefix+key, values))
+				span.SetAttributes(attribute.StringSlice("rpc.response.headers."+key, values))
 			}
 		}
 	case *stats.OutPayload:
@@ -159,8 +159,8 @@ func (c *customServerStatsHandler) HandleRPC(ctx context.Context, stat stats.RPC
 			respMsg := s.Payload.(proto.Message)
 			payload, _ := protojson.Marshal(respMsg)
 			msgType := string(proto.MessageName(respMsg).Name())
-			span.SetAttributes(attribute.Key(rpcResponsePayloadKey).String(string(payload)))
-			span.SetAttributes(attribute.Key(rpcResponseTypeKey).String(msgType))
+			span.SetAttributes(attribute.Key("rpc.response.payload").String(string(payload)))
+			span.SetAttributes(attribute.Key("rpc.response.type").String(msgType))
 		}
 	}
 }

@@ -52,8 +52,8 @@ func (d telemetryNexusEndpointStore) CreateOrUpdateNexusEndpoint(ctx context.Con
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.NexusEndpointStore.CreateOrUpdateNexusEndpoint(ctx, request)
@@ -87,8 +87,8 @@ func (d telemetryNexusEndpointStore) DeleteNexusEndpoint(ctx context.Context, re
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.NexusEndpointStore.DeleteNexusEndpoint(ctx, request)
@@ -122,8 +122,8 @@ func (d telemetryNexusEndpointStore) GetNexusEndpoint(ctx context.Context, reque
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.NexusEndpointStore.GetNexusEndpoint(ctx, request)
@@ -164,8 +164,8 @@ func (d telemetryNexusEndpointStore) ListNexusEndpoints(ctx context.Context, req
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.NexusEndpointStore.ListNexusEndpoints(ctx, request)

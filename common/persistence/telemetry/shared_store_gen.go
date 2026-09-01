@@ -52,8 +52,8 @@ func (d telemetryShardStore) AssertShardOwnership(ctx context.Context, request *
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.ShardStore.AssertShardOwnership(ctx, request)
@@ -87,8 +87,8 @@ func (d telemetryShardStore) GetOrCreateShard(ctx context.Context, request *_sou
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ShardStore.GetOrCreateShard(ctx, request)
@@ -129,8 +129,8 @@ func (d telemetryShardStore) UpdateShard(ctx context.Context, request *_sourcePe
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.ShardStore.UpdateShard(ctx, request)

@@ -52,8 +52,8 @@ func (d telemetryTaskStore) CompleteTasksLessThan(ctx context.Context, request *
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	i1, err = d.TaskStore.CompleteTasksLessThan(ctx, request)
@@ -94,8 +94,8 @@ func (d telemetryTaskStore) CountTaskQueuesByBuildId(ctx context.Context, reques
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	i1, err = d.TaskStore.CountTaskQueuesByBuildId(ctx, request)
@@ -136,8 +136,8 @@ func (d telemetryTaskStore) CreateTaskQueue(ctx context.Context, request *_sourc
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.TaskStore.CreateTaskQueue(ctx, request)
@@ -171,8 +171,8 @@ func (d telemetryTaskStore) CreateTasks(ctx context.Context, request *_sourcePer
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	cp1, err = d.TaskStore.CreateTasks(ctx, request)
@@ -213,8 +213,8 @@ func (d telemetryTaskStore) DeleteTaskQueue(ctx context.Context, request *_sourc
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.TaskStore.DeleteTaskQueue(ctx, request)
@@ -248,8 +248,8 @@ func (d telemetryTaskStore) GetTaskQueue(ctx context.Context, request *_sourcePe
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.TaskStore.GetTaskQueue(ctx, request)
@@ -290,8 +290,8 @@ func (d telemetryTaskStore) GetTaskQueueUserData(ctx context.Context, request *_
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.TaskStore.GetTaskQueueUserData(ctx, request)
@@ -332,8 +332,8 @@ func (d telemetryTaskStore) GetTaskQueuesByBuildId(ctx context.Context, request 
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	sa1, err = d.TaskStore.GetTaskQueuesByBuildId(ctx, request)
@@ -374,8 +374,8 @@ func (d telemetryTaskStore) GetTasks(ctx context.Context, request *_sourcePersis
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.TaskStore.GetTasks(ctx, request)
@@ -416,8 +416,8 @@ func (d telemetryTaskStore) ListTaskQueue(ctx context.Context, request *_sourceP
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.TaskStore.ListTaskQueue(ctx, request)
@@ -458,8 +458,8 @@ func (d telemetryTaskStore) ListTaskQueueUserDataEntries(ctx context.Context, re
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	ip1, err = d.TaskStore.ListTaskQueueUserDataEntries(ctx, request)
@@ -500,8 +500,8 @@ func (d telemetryTaskStore) UpdateTaskQueue(ctx context.Context, request *_sourc
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	up1, err = d.TaskStore.UpdateTaskQueue(ctx, request)
@@ -542,8 +542,8 @@ func (d telemetryTaskStore) UpdateTaskQueueUserData(ctx context.Context, request
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.PersistenceDeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.PersistenceTimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
 	}
 
 	err = d.TaskStore.UpdateTaskQueueUserData(ctx, request)
