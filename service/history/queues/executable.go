@@ -294,7 +294,7 @@ func (e *executableImpl) Execute() (retErr error) {
 		if task, ok := e.GetTask().(tasks.HasArchetypeID); ok {
 			idKey = telemetry.BusinessIDKey
 			chasmAttributes = []attribute.KeyValue{
-				attribute.String(telemetry.ChasmNamespaceIDKey, e.GetNamespaceID()),
+				attribute.String(telemetry.NamespaceIDKey, e.GetNamespaceID()),
 				attribute.Int64(telemetry.ChasmArchetypeIDKey, int64(task.GetArchetypeID())),
 			}
 			if name := e.GetTask().GetCategory().Name(); name != "" {
