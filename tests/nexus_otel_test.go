@@ -29,7 +29,6 @@ import (
 	"go.temporal.io/server/chasm/lib/nexusoperation"
 	"go.temporal.io/server/common/dynamicconfig"
 	"go.temporal.io/server/common/nexus/nexusrpc"
-	"go.temporal.io/server/common/telemetry"
 	"go.temporal.io/server/common/testing/await"
 	"go.temporal.io/server/common/testing/parallelsuite"
 	"go.temporal.io/server/common/testing/testtelemetry"
@@ -213,7 +212,7 @@ func (s *NexusOTELSuite) TestOperation() {
 			Kind:        oteltrace.SpanKindClient,
 			URLPath:     operationURLPath,
 			NexusAttrs: map[string]any{
-				telemetry.NexusRequestIDKey: nexusRequestID,
+				"temporalNexusRequestID": nexusRequestID,
 			},
 		},
 		{
@@ -225,10 +224,10 @@ func (s *NexusOTELSuite) TestOperation() {
 			Kind:         oteltrace.SpanKindServer,
 			URLPath:      operationURLPath,
 			NexusAttrs: map[string]any{
-				telemetry.NexusEndpointKey:  handlerWorkerEndpoint.GetSpec().GetName(),
-				telemetry.NexusOperationKey: operation.Name(),
-				telemetry.NexusRequestIDKey: nexusRequestID,
-				telemetry.NexusServiceKey:   service.Name,
+				"temporalNexusEndpoint":  handlerWorkerEndpoint.GetSpec().GetName(),
+				"temporalNexusOperation": operation.Name(),
+				"temporalNexusRequestID": nexusRequestID,
+				"temporalNexusService":   service.Name,
 			},
 		},
 		{
@@ -248,9 +247,9 @@ func (s *NexusOTELSuite) TestOperation() {
 			Kind:         oteltrace.SpanKindServer,
 			URLPath:      operationURLPath + "/cancel",
 			NexusAttrs: map[string]any{
-				telemetry.NexusEndpointKey:  handlerWorkerEndpoint.GetSpec().GetName(),
-				telemetry.NexusOperationKey: operation.Name(),
-				telemetry.NexusServiceKey:   service.Name,
+				"temporalNexusEndpoint":  handlerWorkerEndpoint.GetSpec().GetName(),
+				"temporalNexusOperation": operation.Name(),
+				"temporalNexusService":   service.Name,
 			},
 		},
 	})
@@ -302,8 +301,8 @@ func (s *NexusOTELSuite) TestWorkerOperation() {
 			Kind:        oteltrace.SpanKindClient,
 			URLPath:     operationURLPath,
 			NexusAttrs: map[string]any{
-				telemetry.NexusNamespaceKey: env.Namespace().String(),
-				telemetry.NexusRequestIDKey: request.requestID,
+				"temporalNexusNamespace": env.Namespace().String(),
+				"temporalNexusRequestID": request.requestID,
 			},
 		},
 		{
@@ -315,10 +314,10 @@ func (s *NexusOTELSuite) TestWorkerOperation() {
 			Kind:         oteltrace.SpanKindServer,
 			URLPath:      operationURLPath,
 			NexusAttrs: map[string]any{
-				telemetry.NexusEndpointKey:  endpoint.GetSpec().GetName(),
-				telemetry.NexusOperationKey: operation.Name(),
-				telemetry.NexusRequestIDKey: request.requestID,
-				telemetry.NexusServiceKey:   service.Name,
+				"temporalNexusEndpoint":  endpoint.GetSpec().GetName(),
+				"temporalNexusOperation": operation.Name(),
+				"temporalNexusRequestID": request.requestID,
+				"temporalNexusService":   service.Name,
 			},
 		},
 	})
@@ -390,9 +389,9 @@ func (s *NexusOTELSuite) TestNamespaceAndTaskQueueDispatch() {
 		URLPath:     dispatchURL.Path + "/test-service/my-operation",
 		Status:      codes.Error,
 		NexusAttrs: map[string]any{
-			telemetry.NexusOperationKey: "my-operation",
-			telemetry.NexusRequestIDKey: requestID,
-			telemetry.NexusServiceKey:   "test-service",
+			"temporalNexusOperation": "my-operation",
+			"temporalNexusRequestID": requestID,
+			"temporalNexusService":   "test-service",
 		},
 	}})
 	s.Require().Equal(traceID, httpSpans[0].SpanContext.TraceID().String())
@@ -427,7 +426,7 @@ func (s *NexusOTELSuite) requireNexusTaskGRPCSpans(
 
 func (s *NexusOTELSuite) nexusTaskGRPCSpans(spans tracetest.SpanStubs) []nexusTaskSpan {
 	spans = testtelemetry.FilterSpans(spans, func(span tracetest.SpanStub) bool {
-		_, ok := testtelemetry.SpanAttribute(span, telemetry.WorkerTaskIDKey)
+		_, ok := testtelemetry.SpanAttribute(span, "temporalWorkerTaskID")
 		return ok
 	})
 	slices.SortFunc(spans, func(a, b tracetest.SpanStub) int {
@@ -435,7 +434,7 @@ func (s *NexusOTELSuite) nexusTaskGRPCSpans(spans tracetest.SpanStubs) []nexusTa
 	})
 
 	localSpanIDs := testtelemetry.LocalSpanIDs(spans)
-	localTaskIDs := testtelemetry.LocalAttributeIDs(spans, telemetry.WorkerTaskIDKey)
+	localTaskIDs := testtelemetry.LocalAttributeIDs(spans, "temporalWorkerTaskID")
 
 	result := make([]nexusTaskSpan, 0, len(spans))
 	for i, span := range spans {
@@ -488,11 +487,11 @@ func (s *NexusOTELSuite) nexusHTTPSpans(
 		for _, attr := range span.Attributes {
 			key := string(attr.Key)
 			switch key {
-			case telemetry.NexusEndpointKey,
-				telemetry.NexusNamespaceKey,
-				telemetry.NexusOperationKey,
-				telemetry.NexusRequestIDKey,
-				telemetry.NexusServiceKey:
+			case "temporalNexusEndpoint",
+				"temporalNexusNamespace",
+				"temporalNexusOperation",
+				"temporalNexusRequestID",
+				"temporalNexusService":
 				if nexusAttrs == nil {
 					nexusAttrs = make(map[string]any)
 				}

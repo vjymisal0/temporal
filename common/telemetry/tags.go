@@ -6,14 +6,6 @@ const (
 	ChasmTransitionDestinationKey = "temporalChasmTransitionDestination"
 	ChasmTransitionErrorKey       = "temporalChasmTransitionError"
 	ChasmTransitionSourceKey      = "temporalChasmTransitionSource"
-	ComponentPersistence          = "temporalPersistence"
-	ComponentQueueArchival        = "temporalQueueArchival"
-	ComponentQueueMemory          = "temporalQueueMemory"
-	ComponentQueueOutbound        = "temporalQueueOutbound"
-	ComponentQueueTimer           = "temporalQueueTimer"
-	ComponentQueueTransfer        = "temporalQueueTransfer"
-	ComponentQueueVisibility      = "temporalQueueVisibility"
-	ComponentUpdateRegistry       = "temporalUpdateRegistry"
 	NamespaceIDKey                = "temporalNamespaceID"
 	NexusEndpointKey              = "temporalNexusEndpoint"
 	NexusNamespaceKey             = "temporalNexusNamespace"
@@ -30,4 +22,15 @@ const (
 	RunIDKey                      = "temporalRunID"
 	WorkerTaskIDKey               = "temporalWorkerTaskID"
 	WorkflowIDKey                 = "temporalWorkflowID"
+)
+
+const (
+	ComponentPersistence     = "temporalPersistence"
+	ComponentQueueArchival   = "temporalQueueArchival"
+	ComponentQueueMemory     = "temporalQueueMemory"
+	ComponentQueueOutbound   = "temporalQueueOutbound"
+	ComponentQueueTimer      = "temporalQueueTimer"
+	ComponentQueueTransfer   = "temporalQueueTransfer"
+	ComponentQueueVisibility = "temporalQueueVisibility"
+	ComponentUpdateRegistry  = "temporalUpdateRegistry"
 )
