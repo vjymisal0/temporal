@@ -496,6 +496,7 @@ func (s *NexusOTELSuite) nexusHTTPSpans(
 					nexusAttrs = make(map[string]any)
 				}
 				nexusAttrs[key] = attr.Value.AsInterface()
+			default:
 			}
 			if attr.Key == semconv.URLPathKey {
 				urlPath = attr.Value.AsString()
