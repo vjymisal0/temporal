@@ -52,8 +52,8 @@ func (d telemetryClusterMetadataStore) DeleteClusterMetadata(ctx context.Context
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.ClusterMetadataStore.DeleteClusterMetadata(ctx, request)
@@ -87,8 +87,8 @@ func (d telemetryClusterMetadataStore) GetClusterMembers(ctx context.Context, re
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	gp1, err = d.ClusterMetadataStore.GetClusterMembers(ctx, request)
@@ -129,8 +129,8 @@ func (d telemetryClusterMetadataStore) GetClusterMetadata(ctx context.Context, r
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ClusterMetadataStore.GetClusterMetadata(ctx, request)
@@ -171,8 +171,8 @@ func (d telemetryClusterMetadataStore) ListClusterMetadata(ctx context.Context, 
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ClusterMetadataStore.ListClusterMetadata(ctx, request)
@@ -213,8 +213,8 @@ func (d telemetryClusterMetadataStore) PruneClusterMembership(ctx context.Contex
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.ClusterMetadataStore.PruneClusterMembership(ctx, request)
@@ -248,8 +248,8 @@ func (d telemetryClusterMetadataStore) SaveClusterMetadata(ctx context.Context, 
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	b1, err = d.ClusterMetadataStore.SaveClusterMetadata(ctx, request)
@@ -290,8 +290,8 @@ func (d telemetryClusterMetadataStore) UpsertClusterMembership(ctx context.Conte
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.ClusterMetadataStore.UpsertClusterMembership(ctx, request)

@@ -36,8 +36,8 @@ func new{{upFirst $decorator}} (
             defer span.End()
 
             if deadline, ok := ctx.Deadline(); ok {
-                span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-                span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+                span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+                span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
             }
 
             {{$method.ResultsNames}} = d.{{$.Interface.Name}}.{{$method.Call}}

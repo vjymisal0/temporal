@@ -52,8 +52,8 @@ func (d telemetryExecutionStore) AddHistoryTasks(ctx context.Context, request *_
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.AddHistoryTasks(ctx, request)
@@ -87,8 +87,8 @@ func (d telemetryExecutionStore) AppendHistoryNodes(ctx context.Context, request
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.AppendHistoryNodes(ctx, request)
@@ -122,8 +122,8 @@ func (d telemetryExecutionStore) CompleteHistoryTask(ctx context.Context, reques
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.CompleteHistoryTask(ctx, request)
@@ -157,8 +157,8 @@ func (d telemetryExecutionStore) ConflictResolveWorkflowExecution(ctx context.Co
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.ConflictResolveWorkflowExecution(ctx, request)
@@ -192,8 +192,8 @@ func (d telemetryExecutionStore) CreateWorkflowExecution(ctx context.Context, re
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ExecutionStore.CreateWorkflowExecution(ctx, request)
@@ -234,8 +234,8 @@ func (d telemetryExecutionStore) DeleteCurrentWorkflowExecution(ctx context.Cont
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.DeleteCurrentWorkflowExecution(ctx, request)
@@ -269,8 +269,8 @@ func (d telemetryExecutionStore) DeleteHistoryBranch(ctx context.Context, reques
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.DeleteHistoryBranch(ctx, request)
@@ -304,8 +304,8 @@ func (d telemetryExecutionStore) DeleteHistoryNodes(ctx context.Context, request
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.DeleteHistoryNodes(ctx, request)
@@ -339,8 +339,8 @@ func (d telemetryExecutionStore) DeleteReplicationTaskFromDLQ(ctx context.Contex
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.DeleteReplicationTaskFromDLQ(ctx, request)
@@ -374,8 +374,8 @@ func (d telemetryExecutionStore) DeleteWorkflowExecution(ctx context.Context, re
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.DeleteWorkflowExecution(ctx, request)
@@ -409,8 +409,8 @@ func (d telemetryExecutionStore) ForkHistoryBranch(ctx context.Context, request 
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.ForkHistoryBranch(ctx, request)
@@ -444,8 +444,8 @@ func (d telemetryExecutionStore) GetAllHistoryTreeBranches(ctx context.Context, 
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ExecutionStore.GetAllHistoryTreeBranches(ctx, request)
@@ -486,8 +486,8 @@ func (d telemetryExecutionStore) GetCurrentExecution(ctx context.Context, reques
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ExecutionStore.GetCurrentExecution(ctx, request)
@@ -528,8 +528,8 @@ func (d telemetryExecutionStore) GetHistoryTasks(ctx context.Context, request *_
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ExecutionStore.GetHistoryTasks(ctx, request)
@@ -570,8 +570,8 @@ func (d telemetryExecutionStore) GetHistoryTreeContainingBranch(ctx context.Cont
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ExecutionStore.GetHistoryTreeContainingBranch(ctx, request)
@@ -612,8 +612,8 @@ func (d telemetryExecutionStore) GetReplicationTasksFromDLQ(ctx context.Context,
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ExecutionStore.GetReplicationTasksFromDLQ(ctx, request)
@@ -654,8 +654,8 @@ func (d telemetryExecutionStore) GetWorkflowExecution(ctx context.Context, reque
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ExecutionStore.GetWorkflowExecution(ctx, request)
@@ -696,8 +696,8 @@ func (d telemetryExecutionStore) IsReplicationDLQEmpty(ctx context.Context, requ
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	b1, err = d.ExecutionStore.IsReplicationDLQEmpty(ctx, request)
@@ -738,8 +738,8 @@ func (d telemetryExecutionStore) ListConcreteExecutions(ctx context.Context, req
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ExecutionStore.ListConcreteExecutions(ctx, request)
@@ -780,8 +780,8 @@ func (d telemetryExecutionStore) PutReplicationTaskToDLQ(ctx context.Context, re
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.PutReplicationTaskToDLQ(ctx, request)
@@ -815,8 +815,8 @@ func (d telemetryExecutionStore) RangeCompleteHistoryTasks(ctx context.Context, 
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.RangeCompleteHistoryTasks(ctx, request)
@@ -850,8 +850,8 @@ func (d telemetryExecutionStore) RangeDeleteReplicationTaskFromDLQ(ctx context.C
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.RangeDeleteReplicationTaskFromDLQ(ctx, request)
@@ -885,8 +885,8 @@ func (d telemetryExecutionStore) ReadHistoryBranch(ctx context.Context, request 
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	ip1, err = d.ExecutionStore.ReadHistoryBranch(ctx, request)
@@ -927,8 +927,8 @@ func (d telemetryExecutionStore) SetWorkflowExecution(ctx context.Context, reque
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.SetWorkflowExecution(ctx, request)
@@ -962,8 +962,8 @@ func (d telemetryExecutionStore) UpdateWorkflowExecution(ctx context.Context, re
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.ExecutionStore.UpdateWorkflowExecution(ctx, request)

@@ -53,8 +53,8 @@ func (d telemetryQueue) DeleteMessageFromDLQ(ctx context.Context, messageID int6
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.Queue.DeleteMessageFromDLQ(ctx, messageID)
@@ -88,8 +88,8 @@ func (d telemetryQueue) DeleteMessagesBefore(ctx context.Context, messageID int6
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.Queue.DeleteMessagesBefore(ctx, messageID)
@@ -123,8 +123,8 @@ func (d telemetryQueue) EnqueueMessage(ctx context.Context, blob *commonpb.DataB
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.Queue.EnqueueMessage(ctx, blob)
@@ -158,8 +158,8 @@ func (d telemetryQueue) EnqueueMessageToDLQ(ctx context.Context, blob *commonpb.
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	i1, err = d.Queue.EnqueueMessageToDLQ(ctx, blob)
@@ -200,8 +200,8 @@ func (d telemetryQueue) GetAckLevels(ctx context.Context) (ip1 *_sourcePersisten
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	ip1, err = d.Queue.GetAckLevels(ctx)
@@ -235,8 +235,8 @@ func (d telemetryQueue) GetDLQAckLevels(ctx context.Context) (ip1 *_sourcePersis
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	ip1, err = d.Queue.GetDLQAckLevels(ctx)
@@ -270,8 +270,8 @@ func (d telemetryQueue) Init(ctx context.Context, blob *commonpb.DataBlob) (err 
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.Queue.Init(ctx, blob)
@@ -305,8 +305,8 @@ func (d telemetryQueue) RangeDeleteMessagesFromDLQ(ctx context.Context, firstMes
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.Queue.RangeDeleteMessagesFromDLQ(ctx, firstMessageID, lastMessageID)
@@ -340,8 +340,8 @@ func (d telemetryQueue) ReadMessages(ctx context.Context, lastMessageID int64, m
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	qpa1, err = d.Queue.ReadMessages(ctx, lastMessageID, maxCount)
@@ -382,8 +382,8 @@ func (d telemetryQueue) ReadMessagesFromDLQ(ctx context.Context, firstMessageID 
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	qpa1, ba1, err = d.Queue.ReadMessagesFromDLQ(ctx, firstMessageID, lastMessageID, pageSize, pageToken)
@@ -424,8 +424,8 @@ func (d telemetryQueue) UpdateAckLevel(ctx context.Context, metadata *_sourcePer
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.Queue.UpdateAckLevel(ctx, metadata)
@@ -459,8 +459,8 @@ func (d telemetryQueue) UpdateDLQAckLevel(ctx context.Context, metadata *_source
 	defer span.End()
 
 	if deadline, ok := ctx.Deadline(); ok {
-		span.SetAttributes(attribute.String(telemetry.DeadlineKey, deadline.Format(time.RFC3339Nano)))
-		span.SetAttributes(attribute.String(telemetry.TimeoutKey, time.Until(deadline).String()))
+		span.SetAttributes(attribute.String("deadline", deadline.Format(time.RFC3339Nano)))
+		span.SetAttributes(attribute.String("timeout", time.Until(deadline).String()))
 	}
 
 	err = d.Queue.UpdateDLQAckLevel(ctx, metadata)
