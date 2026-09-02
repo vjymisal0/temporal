@@ -202,6 +202,18 @@ func (s *NexusOTELSuite) TestOperation() {
 	})
 	s.NoError(err)
 
+	handlerRunID := handlerEnv.SdkClient().GetWorkflow(s.Context(), nexusRequestID, "").GetRunID()
+	handlerLink := temporalnexus.ConvertLinkWorkflowEventToNexusLink(&commonpb.Link_WorkflowEvent{
+		Namespace:  handlerEnv.Namespace().String(),
+		WorkflowId: nexusRequestID,
+		RunId:      handlerRunID,
+		Reference: &commonpb.Link_WorkflowEvent_EventRef{
+			EventRef: &commonpb.Link_WorkflowEvent_EventReference{
+				EventId:   1,
+				EventType: enumspb.EVENT_TYPE_WORKFLOW_EXECUTION_STARTED,
+			},
+		},
+	})
 	operationURLPath := "/nexus/endpoints/" + handlerWorkerEndpoint.Id + "/services/" + service.Name + "/" + operation.Name()
 	s.requireNexusHTTPSpans(exporter, []nexusHTTPSpan{
 		{
@@ -225,7 +237,10 @@ func (s *NexusOTELSuite) TestOperation() {
 			URLPath:      operationURLPath,
 			NexusAttrs: map[string]any{
 				"temporalNexusEndpoint":          handlerWorkerEndpoint.GetSpec().GetName(),
+				"temporalNexusHandlerNamespace":  handlerEnv.Namespace().String(),
+				"temporalNexusHandlerRunID":      handlerRunID,
 				"temporalNexusHandlerWorkflowID": nexusRequestID,
+				"temporalNexusLinks":             []string{handlerLink.URL.String()},
 				"temporalNexusOperation":         operation.Name(),
 				"temporalNexusOutcome":           "async_success",
 				"temporalNexusRequestID":         nexusRequestID,
@@ -490,19 +505,11 @@ func (s *NexusOTELSuite) nexusHTTPSpans(
 		var nexusAttrs map[string]any
 		for _, attr := range span.Attributes {
 			key := string(attr.Key)
-			switch key {
-			case "temporalNexusEndpoint",
-				"temporalNexusHandlerWorkflowID",
-				"temporalNexusNamespace",
-				"temporalNexusOperation",
-				"temporalNexusOutcome",
-				"temporalNexusRequestID",
-				"temporalNexusService":
+			if strings.HasPrefix(key, "temporalNexus") {
 				if nexusAttrs == nil {
 					nexusAttrs = make(map[string]any)
 				}
 				nexusAttrs[key] = attr.Value.AsInterface()
-			default:
 			}
 			if attr.Key == semconv.URLPathKey {
 				urlPath = attr.Value.AsString()

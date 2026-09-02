@@ -92,7 +92,11 @@ func (c *operationContext) annotateServerSpan(
 	ctx context.Context,
 	service, operation, requestID string,
 ) {
-	nexusrpc.AnnotateServerSpan(trace.SpanFromContext(ctx), nexusrpc.ServerSpanAttributes{
+	span := trace.SpanFromContext(ctx)
+	if !span.IsRecording() {
+		return
+	}
+	nexusrpc.AnnotateServerSpan(span, nexusrpc.ServerSpanAttributes{
 		SpanName:  strings.TrimPrefix(c.apiName, "/"),
 		Endpoint:  c.endpointName,
 		Service:   service,
@@ -106,7 +110,11 @@ func (c *operationContext) annotateServerSpanResult(
 	outcome string,
 	links []nexus.Link,
 ) {
-	nexusrpc.AnnotateServerSpanResult(trace.SpanFromContext(ctx), nexusrpc.ServerSpanResultAttributes{
+	span := trace.SpanFromContext(ctx)
+	if !span.IsRecording() {
+		return
+	}
+	nexusrpc.AnnotateServerSpanResult(span, nexusrpc.ServerSpanResultAttributes{
 		Outcome: outcome,
 		Links:   links,
 	})
