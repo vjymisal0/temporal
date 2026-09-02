@@ -417,6 +417,11 @@ func (o *Operation) Terminate(
 		return chasm.TerminateComponentResponse{}, nil
 	}
 
+	// TransitionTerminated still accepts a canceled operation, so this is narrower than isClosed().
+	if !TransitionTerminated.Possible(o) {
+		return chasm.TerminateComponentResponse{}, ErrOperationAlreadyCompleted
+	}
+
 	return chasm.TerminateComponentResponse{}, TransitionTerminated.Apply(o, ctx, EventTerminated{
 		TerminateComponentRequest: req,
 	})
