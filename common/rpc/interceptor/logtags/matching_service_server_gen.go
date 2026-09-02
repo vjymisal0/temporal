@@ -7,192 +7,289 @@ import (
 	"go.temporal.io/server/common/log/tag"
 )
 
-func (wt *WorkflowTags) extractFromMatchingServiceServerMessage(message any) []tag.Tag {
+func (wt *WorkflowTags) extractFromMatchingServiceServerMessage(message any) extractedTags {
 	switch r := message.(type) {
 	case *matchingservice.AddActivityTaskRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *matchingservice.AddActivityTaskResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.AddWorkflowTaskRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *matchingservice.AddWorkflowTaskResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.ApplyTaskQueueUserDataReplicationEventRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.ApplyTaskQueueUserDataReplicationEventResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.CancelOutstandingPollRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.CancelOutstandingPollResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.CancelOutstandingWorkerPollsRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.CancelOutstandingWorkerPollsResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.CancelOutstandingWorkerPollsPartitionRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.CancelOutstandingWorkerPollsPartitionResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.CheckTaskQueueUserDataPropagationRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.CheckTaskQueueUserDataPropagationResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.CheckTaskQueueVersionMembershipRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.CheckTaskQueueVersionMembershipResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.CountWorkersRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetCountRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.CountWorkersResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.CreateNexusEndpointRequest:
-		return nil
+		return extractedTags{}
 	case *matchingservice.CreateNexusEndpointResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.DeleteNexusEndpointRequest:
-		return nil
+		return extractedTags{}
 	case *matchingservice.DeleteNexusEndpointResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.DescribeTaskQueueRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetDescRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.DescribeTaskQueueResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.DescribeTaskQueuePartitionRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.DescribeTaskQueuePartitionResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.DescribeVersionedTaskQueuesRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.DescribeVersionedTaskQueuesResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.DescribeWorkerRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.DescribeWorkerResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.DispatchNexusTaskRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.DispatchNexusTaskResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.ForceLoadTaskQueuePartitionRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.ForceLoadTaskQueuePartitionResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.ForceUnloadTaskQueueRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.ForceUnloadTaskQueueResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.ForceUnloadTaskQueuePartitionRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.ForceUnloadTaskQueuePartitionResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.GetBuildIdTaskQueueMappingRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.GetBuildIdTaskQueueMappingResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.GetTaskQueueUserDataRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.GetTaskQueueUserDataResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.GetWorkerBuildIdCompatibilityRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.GetWorkerBuildIdCompatibilityResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.GetWorkerVersioningRulesRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.GetWorkerVersioningRulesResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.ListNexusEndpointsRequest:
-		return nil
+		return extractedTags{}
 	case *matchingservice.ListNexusEndpointsResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.ListTaskQueuePartitionsRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.ListTaskQueuePartitionsResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.ListWorkersRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetListRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.ListWorkersResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.PollActivityTaskQueueRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetPollRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.PollActivityTaskQueueResponse:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
 		}
 	case *matchingservice.PollNexusTaskQueueRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.PollNexusTaskQueueResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.PollWorkflowTaskQueueRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetPollRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.PollWorkflowTaskQueueResponseWithRawHistory:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
 		}
 	case *matchingservice.QueryWorkflowRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetQueryRequest().GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetQueryRequest().GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetQueryRequest().GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetQueryRequest().GetExecution().GetRunId()),
+			},
+			namespace: r.GetQueryRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *matchingservice.QueryWorkflowResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.RecordWorkerHeartbeatRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetHeartbeartRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.RecordWorkerHeartbeatResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.ReplicateTaskQueueUserDataRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.ReplicateTaskQueueUserDataResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.RespondNexusTaskCompletedRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.RespondNexusTaskCompletedResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.RespondNexusTaskFailedRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.RespondNexusTaskFailedResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.RespondQueryTaskCompletedRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetCompletedRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.RespondQueryTaskCompletedResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.SyncDeploymentUserDataRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.SyncDeploymentUserDataResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.UpdateFairnessStateRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.UpdateFairnessStateResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.UpdateNexusEndpointRequest:
-		return nil
+		return extractedTags{}
 	case *matchingservice.UpdateNexusEndpointResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.UpdateTaskQueueConfigRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.UpdateTaskQueueConfigResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.UpdateTaskQueueUserDataRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.UpdateTaskQueueUserDataResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.UpdateWorkerBuildIdCompatibilityRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.UpdateWorkerBuildIdCompatibilityResponse:
-		return nil
+		return extractedTags{}
 	case *matchingservice.UpdateWorkerVersioningRulesRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *matchingservice.UpdateWorkerVersioningRulesResponse:
-		return nil
+		return extractedTags{}
 	default:
-		return nil
+		return extractedTags{}
 	}
 }

@@ -180,7 +180,7 @@ func (c *customServerStatsHandler) annotateTags(
 	}
 
 	// annotate span with workflow tags (same ones the Temporal SDKs use)
-	logTags := c.tags.Extract(payload, methodName)
+	logTags, namespace, namespaceID := c.tags.ExtractForSpan(payload, methodName)
 	hasWorkflowID := false
 	for _, logTag := range logTags {
 		if logTag.Key() == tag.WorkflowIDKey && logTag.Value() != "" {
@@ -213,7 +213,12 @@ func (c *customServerStatsHandler) annotateTags(
 		}
 		span.SetAttributes(attribute.Key(k).String(value))
 	}
-	span.SetAttributes(rpcNamespaceAttributes(payload)...)
+	if namespace != "" {
+		span.SetAttributes(attribute.String(NamespaceKey, namespace))
+	}
+	if namespaceID != "" {
+		span.SetAttributes(attribute.String(NamespaceIDKey, namespaceID))
+	}
 
 	if workerTaskID := c.workerTaskID(payload); workerTaskID != "" {
 		span.SetAttributes(attribute.String(WorkerTaskIDKey, workerTaskID))

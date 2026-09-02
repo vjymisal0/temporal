@@ -192,3 +192,36 @@ func TestExtract(t *testing.T) {
 		})
 	}
 }
+
+func TestExtractForSpan(t *testing.T) {
+	wt := logtags.NewWorkflowTags(
+		tasktoken.NewSerializer(),
+		log.NewTestLogger(),
+	)
+	request := &matchingservice.QueryWorkflowRequest{
+		NamespaceId: "namespace-id",
+		QueryRequest: &workflowservice.QueryWorkflowRequest{
+			Namespace: "namespace",
+			Execution: &commonpb.WorkflowExecution{
+				WorkflowId: "workflow-id",
+				RunId:      "run-id",
+			},
+		},
+	}
+
+	tags, namespace, namespaceID := wt.ExtractForSpan(
+		request,
+		"/temporal.server.api.matchingservice.v1.MatchingService/QueryWorkflow",
+	)
+
+	require.Equal(t, []tag.Tag{
+		tag.WorkflowID("workflow-id"),
+		tag.WorkflowRunID("run-id"),
+	}, tags)
+	require.Equal(t, "namespace", namespace)
+	require.Equal(t, "namespace-id", namespaceID)
+	require.Equal(t, tags, wt.Extract(
+		request,
+		"/temporal.server.api.matchingservice.v1.MatchingService/QueryWorkflow",
+	))
+}

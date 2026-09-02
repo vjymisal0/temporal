@@ -7,487 +7,708 @@ import (
 	"go.temporal.io/server/common/log/tag"
 )
 
-func (wt *WorkflowTags) extractFromHistoryServiceServerMessage(message any) []tag.Tag {
+func (wt *WorkflowTags) extractFromHistoryServiceServerMessage(message any) extractedTags {
 	switch r := message.(type) {
 	case *historyservice.AddTasksRequest:
-		return nil
+		return extractedTags{}
 	case *historyservice.AddTasksResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.CancelNexusOperationRequest:
-		return []tag.Tag{
-			tag.OperationID(r.GetRequest().GetOperationId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.OperationID(r.GetRequest().GetOperationId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.CancelNexusOperationResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.CloseShardRequest:
-		return nil
+		return extractedTags{}
 	case *historyservice.CloseShardResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.CompleteNexusOperationRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetCompletion().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetCompletion().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetCompletion().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetCompletion().GetRunId()),
+			},
+			namespaceID: r.GetCompletion().GetNamespaceId(),
 		}
 	case *historyservice.CompleteNexusOperationResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.CompleteNexusOperationChasmRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetCompletion().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetCompletion().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetCompletion().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetCompletion().GetRunId()),
+			},
+			namespaceID: r.GetCompletion().GetNamespaceId(),
 		}
 	case *historyservice.CompleteNexusOperationChasmResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.DeepHealthCheckRequest:
-		return nil
+		return extractedTags{}
 	case *historyservice.DeepHealthCheckResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.DeleteDLQTasksRequest:
-		return nil
+		return extractedTags{}
 	case *historyservice.DeleteDLQTasksResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.DeleteExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.DeleteExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.DeleteWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.DeleteWorkflowExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.DeleteWorkflowVisibilityRecordRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.DeleteWorkflowVisibilityRecordResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.DescribeHistoryHostRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.DescribeHistoryHostResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.DescribeMutableStateRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.DescribeMutableStateResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.DescribeWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetRequest().GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetRequest().GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetRequest().GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetRequest().GetExecution().GetRunId()),
+			},
+			namespace: r.GetRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.DescribeWorkflowExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.ExecuteMultiOperationRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.ExecuteMultiOperationResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.ForceDeleteWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetRequest().GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetRequest().GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetRequest().GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetRequest().GetExecution().GetRunId()),
+			},
+			namespace: r.GetRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.ForceDeleteWorkflowExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.GenerateLastHistoryReplicationTasksRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.GenerateLastHistoryReplicationTasksResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.GetDLQMessagesRequest:
-		return nil
+		return extractedTags{}
 	case *historyservice.GetDLQMessagesResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.GetDLQReplicationMessagesRequest:
-		return nil
+		return extractedTags{}
 	case *historyservice.GetDLQReplicationMessagesResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.GetDLQTasksRequest:
-		return nil
+		return extractedTags{}
 	case *historyservice.GetDLQTasksResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.GetMutableStateRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.GetMutableStateResponse:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
 		}
 	case *historyservice.GetReplicationMessagesRequest:
-		return nil
+		return extractedTags{}
 	case *historyservice.GetReplicationMessagesResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.GetReplicationStatusRequest:
-		return nil
+		return extractedTags{}
 	case *historyservice.GetReplicationStatusResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.GetShardRequest:
-		return nil
+		return extractedTags{}
 	case *historyservice.GetShardResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.GetWorkflowExecutionHistoryRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetRequest().GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetRequest().GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetRequest().GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetRequest().GetExecution().GetRunId()),
+			},
+			namespace: r.GetRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.GetWorkflowExecutionHistoryResponseWithRaw:
-		return nil
+		return extractedTags{}
 	case *historyservice.GetWorkflowExecutionHistoryReverseRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetRequest().GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetRequest().GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetRequest().GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetRequest().GetExecution().GetRunId()),
+			},
+			namespace: r.GetRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.GetWorkflowExecutionHistoryReverseResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.GetWorkflowExecutionRawHistoryRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetRequest().GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetRequest().GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetRequest().GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetRequest().GetExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.GetWorkflowExecutionRawHistoryResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.GetWorkflowExecutionRawHistoryV2Request:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetRequest().GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetRequest().GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetRequest().GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetRequest().GetExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.GetWorkflowExecutionRawHistoryV2Response:
-		return nil
+		return extractedTags{}
 	case *historyservice.ImportWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.ImportWorkflowExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.InvokeStateMachineMethodRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowId()),
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowId()),
+				tag.WorkflowRunID(r.GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.InvokeStateMachineMethodResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.IsActivityTaskValidRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.IsActivityTaskValidResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.IsWorkflowTaskValidRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.IsWorkflowTaskValidResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.ListQueuesRequest:
-		return nil
+		return extractedTags{}
 	case *historyservice.ListQueuesResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.ListTasksRequest:
-		return nil
+		return extractedTags{}
 	case *historyservice.ListTasksResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.MergeDLQMessagesRequest:
-		return nil
+		return extractedTags{}
 	case *historyservice.MergeDLQMessagesResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.PauseActivityRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetFrontendRequest().GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetFrontendRequest().GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetFrontendRequest().GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetFrontendRequest().GetExecution().GetRunId()),
+			},
+			namespace: r.GetFrontendRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.PauseActivityResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.PauseWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetPauseRequest().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetPauseRequest().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetPauseRequest().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetPauseRequest().GetRunId()),
+			},
+			namespace: r.GetPauseRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.PauseWorkflowExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.PollMutableStateRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.PollMutableStateResponse:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
 		}
 	case *historyservice.PollWorkflowExecutionTimeSkippingRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetRequest().GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetRequest().GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetRequest().GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetRequest().GetWorkflowExecution().GetRunId()),
+			},
+			namespace: r.GetRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.PollWorkflowExecutionTimeSkippingResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.PollWorkflowExecutionUpdateRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetRequest().GetUpdateRef().GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetRequest().GetUpdateRef().GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetRequest().GetUpdateRef().GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetRequest().GetUpdateRef().GetWorkflowExecution().GetRunId()),
+			},
+			namespace: r.GetRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.PollWorkflowExecutionUpdateResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.PurgeDLQMessagesRequest:
-		return nil
+		return extractedTags{}
 	case *historyservice.PurgeDLQMessagesResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.QueryWorkflowRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetRequest().GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetRequest().GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetRequest().GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetRequest().GetExecution().GetRunId()),
+			},
+			namespace: r.GetRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.QueryWorkflowResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.ReapplyEventsRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetRequest().GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetRequest().GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetRequest().GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetRequest().GetWorkflowExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.ReapplyEventsResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.RebuildMutableStateRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.RebuildMutableStateResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.RecordActivityTaskHeartbeatRequest:
-		return wt.fromTaskToken(r.GetHeartbeatRequest().GetTaskToken())
+		return extractedTags{
+			tags: wt.fromTaskToken(r.GetHeartbeatRequest().GetTaskToken()),
+			namespace: r.GetHeartbeatRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *historyservice.RecordActivityTaskHeartbeatResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.RecordActivityTaskStartedRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
+			namespace: r.GetPollRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.RecordActivityTaskStartedResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.RecordChildExecutionCompletedRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetParentExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetParentExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetParentExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetParentExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.RecordChildExecutionCompletedResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.RecordWorkflowTaskStartedRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
+			namespace: r.GetPollRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.RecordWorkflowTaskStartedResponseWithRawHistory:
-		return nil
+		return extractedTags{}
 	case *historyservice.RefreshWorkflowTasksRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetRequest().GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetRequest().GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetRequest().GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetRequest().GetExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.RefreshWorkflowTasksResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.RemoveSignalMutableStateRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.RemoveSignalMutableStateResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.RemoveTaskRequest:
-		return nil
+		return extractedTags{}
 	case *historyservice.RemoveTaskResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.ReplicateEventsV2Request:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.ReplicateEventsV2Response:
-		return nil
+		return extractedTags{}
 	case *historyservice.ReplicateWorkflowStateRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowState().GetExecutionInfo().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowState().GetExecutionState().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowState().GetExecutionInfo().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowState().GetExecutionState().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.ReplicateWorkflowStateResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.RequestCancelWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetCancelRequest().GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetCancelRequest().GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetCancelRequest().GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetCancelRequest().GetWorkflowExecution().GetRunId()),
+			},
+			namespace: r.GetCancelRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.RequestCancelWorkflowExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.ResetActivityRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetFrontendRequest().GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetFrontendRequest().GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetFrontendRequest().GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetFrontendRequest().GetExecution().GetRunId()),
+			},
+			namespace: r.GetFrontendRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.ResetActivityResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.ResetStickyTaskQueueRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.ResetStickyTaskQueueResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.ResetWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetResetRequest().GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetResetRequest().GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetResetRequest().GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetResetRequest().GetWorkflowExecution().GetRunId()),
+			},
+			namespace: r.GetResetRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.ResetWorkflowExecutionResponse:
-		return []tag.Tag{
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowRunID(r.GetRunId()),
+			},
 		}
 	case *historyservice.RespondActivityTaskCanceledRequest:
-		return wt.fromTaskToken(r.GetCancelRequest().GetTaskToken())
+		return extractedTags{
+			tags: wt.fromTaskToken(r.GetCancelRequest().GetTaskToken()),
+			namespace: r.GetCancelRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *historyservice.RespondActivityTaskCanceledResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.RespondActivityTaskCompletedRequest:
-		return wt.fromTaskToken(r.GetCompleteRequest().GetTaskToken())
+		return extractedTags{
+			tags: wt.fromTaskToken(r.GetCompleteRequest().GetTaskToken()),
+			namespace: r.GetCompleteRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *historyservice.RespondActivityTaskCompletedResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.RespondActivityTaskFailedRequest:
-		return wt.fromTaskToken(r.GetFailedRequest().GetTaskToken())
+		return extractedTags{
+			tags: wt.fromTaskToken(r.GetFailedRequest().GetTaskToken()),
+			namespace: r.GetFailedRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *historyservice.RespondActivityTaskFailedResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.RespondWorkflowTaskCompletedRequest:
-		return wt.fromTaskToken(r.GetCompleteRequest().GetTaskToken())
+		return extractedTags{
+			tags: wt.fromTaskToken(r.GetCompleteRequest().GetTaskToken()),
+			namespace: r.GetCompleteRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *historyservice.RespondWorkflowTaskCompletedResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.RespondWorkflowTaskFailedRequest:
-		return wt.fromTaskToken(r.GetFailedRequest().GetTaskToken())
+		return extractedTags{
+			tags: wt.fromTaskToken(r.GetFailedRequest().GetTaskToken()),
+			namespace: r.GetFailedRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *historyservice.RespondWorkflowTaskFailedResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.ScheduleWorkflowTaskRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.ScheduleWorkflowTaskResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.SignalWithStartWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetSignalWithStartRequest().GetWorkflowId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetSignalWithStartRequest().GetWorkflowId()),
+			},
+			namespace: r.GetSignalWithStartRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.SignalWithStartWorkflowExecutionResponse:
-		return []tag.Tag{
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowRunID(r.GetRunId()),
+			},
 		}
 	case *historyservice.SignalWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetSignalRequest().GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetSignalRequest().GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetSignalRequest().GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetSignalRequest().GetWorkflowExecution().GetRunId()),
+			},
+			namespace: r.GetSignalRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.SignalWorkflowExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.StartNexusOperationRequest:
-		return nil
+		return extractedTags{
+			namespaceID: r.GetNamespaceId(),
+		}
 	case *historyservice.StartNexusOperationResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.StartWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetStartRequest().GetWorkflowId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetStartRequest().GetWorkflowId()),
+			},
+			namespace: r.GetStartRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.StartWorkflowExecutionResponse:
-		return []tag.Tag{
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowRunID(r.GetRunId()),
+			},
 		}
 	case *historyservice.SyncActivityRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowId()),
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowId()),
+				tag.WorkflowRunID(r.GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.SyncActivityResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.SyncShardStatusRequest:
-		return nil
+		return extractedTags{}
 	case *historyservice.SyncShardStatusResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.SyncWorkflowStateRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.SyncWorkflowStateResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.TerminateWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetTerminateRequest().GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetTerminateRequest().GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetTerminateRequest().GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetTerminateRequest().GetWorkflowExecution().GetRunId()),
+			},
+			namespace: r.GetTerminateRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.TerminateWorkflowExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.UnpauseActivityRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetFrontendRequest().GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetFrontendRequest().GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetFrontendRequest().GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetFrontendRequest().GetExecution().GetRunId()),
+			},
+			namespace: r.GetFrontendRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.UnpauseActivityResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.UnpauseWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetUnpauseRequest().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetUnpauseRequest().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetUnpauseRequest().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetUnpauseRequest().GetRunId()),
+			},
+			namespace: r.GetUnpauseRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.UnpauseWorkflowExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.UpdateActivityOptionsRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetUpdateRequest().GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetUpdateRequest().GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetUpdateRequest().GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetUpdateRequest().GetExecution().GetRunId()),
+			},
+			namespace: r.GetUpdateRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.UpdateActivityOptionsResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.UpdateWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetRequest().GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetRequest().GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetRequest().GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetRequest().GetWorkflowExecution().GetRunId()),
+			},
+			namespace: r.GetRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.UpdateWorkflowExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.UpdateWorkflowExecutionOptionsRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetUpdateRequest().GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetUpdateRequest().GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetUpdateRequest().GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetUpdateRequest().GetWorkflowExecution().GetRunId()),
+			},
+			namespace: r.GetUpdateRequest().GetNamespace(),
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.UpdateWorkflowExecutionOptionsResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.VerifyChildExecutionCompletionRecordedRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetParentExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetParentExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetParentExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetParentExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.VerifyChildExecutionCompletionRecordedResponse:
-		return nil
+		return extractedTags{}
 	case *historyservice.VerifyFirstWorkflowTaskScheduledRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
+			namespaceID: r.GetNamespaceId(),
 		}
 	case *historyservice.VerifyFirstWorkflowTaskScheduledResponse:
-		return nil
+		return extractedTags{}
 	default:
-		return nil
+		return extractedTags{}
 	}
 }

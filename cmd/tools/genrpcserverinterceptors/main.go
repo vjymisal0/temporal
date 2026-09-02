@@ -29,6 +29,8 @@ type (
 		ActivityIDGetter  string
 		OperationIDGetter string
 		ChasmRunIDGetter  string
+		NamespaceGetter   string
+		NamespaceIDGetter string
 	}
 
 	grpcServerData struct {
@@ -78,6 +80,10 @@ var (
 	activityIDGetterT = reflect.TypeFor[interface{ GetActivityId() string }]()
 
 	operationIDGetterT = reflect.TypeFor[interface{ GetOperationId() string }]()
+
+	namespaceGetterT = reflect.TypeFor[interface{ GetNamespace() string }]()
+
+	namespaceIDGetterT = reflect.TypeFor[interface{ GetNamespaceId() string }]()
 )
 
 func main() {
@@ -120,6 +126,12 @@ func workflowTagGetters(messageType reflect.Type, depth int) messageData {
 	pd := messageData{}
 	if depth > maxMessageDepth {
 		return pd
+	}
+	if messageType.AssignableTo(namespaceGetterT) {
+		pd.NamespaceGetter = "GetNamespace()"
+	}
+	if messageType.AssignableTo(namespaceIDGetterT) {
+		pd.NamespaceIDGetter = "GetNamespaceId()"
 	}
 
 	switch {
@@ -179,6 +191,12 @@ func workflowTagGetters(messageType reflect.Type, depth int) messageData {
 		}
 		if pd.OperationIDGetter == "" && nestedRd.OperationIDGetter != "" {
 			pd.OperationIDGetter = fmt.Sprintf("Get%s().%s", nestedRequest.Name, nestedRd.OperationIDGetter)
+		}
+		if pd.NamespaceGetter == "" && nestedRd.NamespaceGetter != "" {
+			pd.NamespaceGetter = fmt.Sprintf("Get%s().%s", nestedRequest.Name, nestedRd.NamespaceGetter)
+		}
+		if pd.NamespaceIDGetter == "" && nestedRd.NamespaceIDGetter != "" {
+			pd.NamespaceIDGetter = fmt.Sprintf("Get%s().%s", nestedRequest.Name, nestedRd.NamespaceIDGetter)
 		}
 	}
 

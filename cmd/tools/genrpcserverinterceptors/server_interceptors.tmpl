@@ -10,32 +10,40 @@ import (
 	"go.temporal.io/server/common/log/tag"
 )
 
-func (wt *WorkflowTags) extractFrom{{.Server}}Message(message any) []tag.Tag {
+func (wt *WorkflowTags) extractFrom{{.Server}}Message(message any) extractedTags {
 	switch r := message.(type) {
 	{{- range .Messages}}
 	case {{.Type}}:
-	{{- if or .TaskTokenGetter .WorkflowIDGetter .RunIDGetter .ActivityIDGetter .OperationIDGetter .ChasmRunIDGetter}}
+	{{- if or .TaskTokenGetter .WorkflowIDGetter .RunIDGetter .ActivityIDGetter .OperationIDGetter .ChasmRunIDGetter .NamespaceGetter .NamespaceIDGetter}}
+		return extractedTags{
+		{{- if or .TaskTokenGetter .WorkflowIDGetter .RunIDGetter .ActivityIDGetter .OperationIDGetter .ChasmRunIDGetter}}
 		{{- if .TaskTokenGetter}}
-		return wt.fromTaskToken(r.{{ .TaskTokenGetter}})
+			tags: wt.fromTaskToken(r.{{ .TaskTokenGetter}}),
 		{{- else}}
-		return []tag.Tag{
-		{{if .WorkflowIDGetter}}	tag.WorkflowID(r.{{.WorkflowIDGetter}}),
+			tags: []tag.Tag{
+			{{if .WorkflowIDGetter}}	tag.WorkflowID(r.{{.WorkflowIDGetter}}),
+			{{end -}}
+			{{if .ActivityIDGetter}}	tag.ActivityID(r.{{.ActivityIDGetter}}),
+			{{end -}}
+			{{if .OperationIDGetter}}	tag.OperationID(r.{{.OperationIDGetter}}),
+			{{end -}}
+			{{if .RunIDGetter}}	tag.WorkflowRunID(r.{{.RunIDGetter}}),
+			{{end -}}
+			{{if .ChasmRunIDGetter}}	tag.ChasmRunID(r.{{.ChasmRunIDGetter}}),
+			{{end -}}
+			},
+		{{- end}}
+		{{- end}}
+		{{if .NamespaceGetter}}	namespace: r.{{.NamespaceGetter}},
 		{{end -}}
-		{{if .ActivityIDGetter}}	tag.ActivityID(r.{{.ActivityIDGetter}}),
-		{{end -}}
-		{{if .OperationIDGetter}}	tag.OperationID(r.{{.OperationIDGetter}}),
-		{{end -}}
-		{{if .RunIDGetter}}	tag.WorkflowRunID(r.{{.RunIDGetter}}),
-		{{end -}}
-		{{if .ChasmRunIDGetter}}	tag.ChasmRunID(r.{{.ChasmRunIDGetter}}),
+		{{if .NamespaceIDGetter}}	namespaceID: r.{{.NamespaceIDGetter}},
 		{{end -}}
 		}
-		{{- end}}
 	{{- else}}
-		return nil
+		return extractedTags{}
 	{{- end -}}
 	{{- end}}
 	default:
-		return nil
+		return extractedTags{}
 	}
 }

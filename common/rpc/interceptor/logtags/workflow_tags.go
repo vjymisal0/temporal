@@ -17,6 +17,12 @@ type (
 		serializer *tasktoken.Serializer
 		logger     log.Logger
 	}
+
+	extractedTags struct {
+		tags        []tag.Tag
+		namespace   string
+		namespaceID string
+	}
 )
 
 func NewWorkflowTags(
@@ -30,15 +36,28 @@ func NewWorkflowTags(
 }
 
 func (wt *WorkflowTags) Extract(req any, fullMethod string) []tag.Tag {
+	return wt.extract(req, fullMethod).tags
+}
+
+// ExtractForSpan returns workflow tags and namespace identifiers for span attributes.
+func (wt *WorkflowTags) ExtractForSpan(
+	req any,
+	fullMethod string,
+) (tags []tag.Tag, namespace string, namespaceID string) {
+	extracted := wt.extract(req, fullMethod)
+	return extracted.tags, extracted.namespace, extracted.namespaceID
+}
+
+func (wt *WorkflowTags) extract(req any, fullMethod string) extractedTags {
 	if req == nil {
-		return nil
+		return extractedTags{}
 	}
 	switch {
 	case strings.HasPrefix(fullMethod, api.WorkflowServicePrefix):
 		return wt.extractFromWorkflowServiceServerMessage(req)
 	case strings.HasPrefix(fullMethod, api.OperatorServicePrefix):
 		// OperatorService doesn't have a single API with workflow tags.
-		return nil
+		return extractedTags{}
 	case strings.HasPrefix(fullMethod, api.AdminServicePrefix):
 		return wt.extractFromAdminServiceServerMessage(req)
 	case strings.HasPrefix(fullMethod, api.HistoryServicePrefix):
@@ -46,7 +65,7 @@ func (wt *WorkflowTags) Extract(req any, fullMethod string) []tag.Tag {
 	case strings.HasPrefix(fullMethod, api.MatchingServicePrefix):
 		return wt.extractFromMatchingServiceServerMessage(req)
 	default:
-		return nil
+		return extractedTags{}
 	}
 }
 

@@ -7,664 +7,977 @@ import (
 	"go.temporal.io/server/common/log/tag"
 )
 
-func (wt *WorkflowTags) extractFromWorkflowServiceServerMessage(message any) []tag.Tag {
+func (wt *WorkflowTags) extractFromWorkflowServiceServerMessage(message any) extractedTags {
 	switch r := message.(type) {
 	case *workflowservice.CountActivityExecutionsRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.CountActivityExecutionsResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.CountNexusOperationExecutionsRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.CountNexusOperationExecutionsResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.CountSchedulesRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.CountSchedulesResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.CountWorkersRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.CountWorkersResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.CountWorkflowExecutionsRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.CountWorkflowExecutionsResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.CreateScheduleRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.CreateScheduleResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.CreateWorkerDeploymentRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.CreateWorkerDeploymentResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.CreateWorkerDeploymentVersionRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.CreateWorkerDeploymentVersionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.CreateWorkflowRuleRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.CreateWorkflowRuleResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.DeleteActivityExecutionRequest:
-		return []tag.Tag{
-			tag.ActivityID(r.GetActivityId()),
-			tag.ChasmRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.ActivityID(r.GetActivityId()),
+				tag.ChasmRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.DeleteActivityExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.DeleteNexusOperationExecutionRequest:
-		return []tag.Tag{
-			tag.OperationID(r.GetOperationId()),
-			tag.ChasmRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.OperationID(r.GetOperationId()),
+				tag.ChasmRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.DeleteNexusOperationExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.DeleteScheduleRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.DeleteScheduleResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.DeleteWorkerDeploymentRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.DeleteWorkerDeploymentResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.DeleteWorkerDeploymentVersionRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.DeleteWorkerDeploymentVersionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.DeleteWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.DeleteWorkflowExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.DeleteWorkflowRuleRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.DeleteWorkflowRuleResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.DeprecateNamespaceRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.DeprecateNamespaceResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.DescribeActivityExecutionRequest:
-		return []tag.Tag{
-			tag.ActivityID(r.GetActivityId()),
-			tag.ChasmRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.ActivityID(r.GetActivityId()),
+				tag.ChasmRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.DescribeActivityExecutionResponse:
-		return []tag.Tag{
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowRunID(r.GetRunId()),
+			},
 		}
 	case *workflowservice.DescribeBatchOperationRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.DescribeBatchOperationResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.DescribeDeploymentRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.DescribeDeploymentResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.DescribeNamespaceRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.DescribeNamespaceResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.DescribeNexusOperationExecutionRequest:
-		return []tag.Tag{
-			tag.OperationID(r.GetOperationId()),
-			tag.ChasmRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.OperationID(r.GetOperationId()),
+				tag.ChasmRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.DescribeNexusOperationExecutionResponse:
-		return []tag.Tag{
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowRunID(r.GetRunId()),
+			},
 		}
 	case *workflowservice.DescribeScheduleRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.DescribeScheduleResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.DescribeTaskQueueRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.DescribeTaskQueueResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.DescribeWorkerRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.DescribeWorkerResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.DescribeWorkerDeploymentRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.DescribeWorkerDeploymentResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.DescribeWorkerDeploymentVersionRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.DescribeWorkerDeploymentVersionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.DescribeWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.DescribeWorkflowExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.DescribeWorkflowRuleRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.DescribeWorkflowRuleResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ExecuteMultiOperationRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.ExecuteMultiOperationResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.FetchWorkerConfigRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.FetchWorkerConfigResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.GetClusterInfoRequest:
-		return nil
+		return extractedTags{}
 	case *workflowservice.GetClusterInfoResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.GetCurrentDeploymentRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.GetCurrentDeploymentResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.GetDeploymentReachabilityRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.GetDeploymentReachabilityResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.GetSearchAttributesRequest:
-		return nil
+		return extractedTags{}
 	case *workflowservice.GetSearchAttributesResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.GetSystemInfoRequest:
-		return nil
+		return extractedTags{}
 	case *workflowservice.GetSystemInfoResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.GetWorkerBuildIdCompatibilityRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.GetWorkerBuildIdCompatibilityResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.GetWorkerTaskReachabilityRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.GetWorkerTaskReachabilityResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.GetWorkerVersioningRulesRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.GetWorkerVersioningRulesResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.GetWorkflowExecutionHistoryRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.GetWorkflowExecutionHistoryResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.GetWorkflowExecutionHistoryReverseRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.GetWorkflowExecutionHistoryReverseResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ListActivityExecutionsRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.ListActivityExecutionsResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ListArchivedWorkflowExecutionsRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.ListArchivedWorkflowExecutionsResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ListBatchOperationsRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.ListBatchOperationsResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ListClosedWorkflowExecutionsRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.ListClosedWorkflowExecutionsResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ListDeploymentsRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.ListDeploymentsResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ListNamespacesRequest:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ListNamespacesResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ListNexusOperationExecutionsRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.ListNexusOperationExecutionsResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ListOpenWorkflowExecutionsRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.ListOpenWorkflowExecutionsResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ListScheduleMatchingTimesRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.ListScheduleMatchingTimesResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ListSchedulesRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.ListSchedulesResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ListTaskQueuePartitionsRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.ListTaskQueuePartitionsResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ListWorkerDeploymentsRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.ListWorkerDeploymentsResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ListWorkersRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.ListWorkersResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ListWorkflowExecutionsRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.ListWorkflowExecutionsResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ListWorkflowRulesRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.ListWorkflowRulesResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.PatchScheduleRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.PatchScheduleResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.PauseActivityRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.PauseActivityResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.PauseActivityExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowId()),
-			tag.ActivityID(r.GetActivityId()),
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowId()),
+				tag.ActivityID(r.GetActivityId()),
+				tag.WorkflowRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.PauseActivityExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.PauseWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowId()),
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowId()),
+				tag.WorkflowRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.PauseWorkflowExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.PollActivityExecutionRequest:
-		return []tag.Tag{
-			tag.ActivityID(r.GetActivityId()),
-			tag.ChasmRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.ActivityID(r.GetActivityId()),
+				tag.ChasmRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.PollActivityExecutionResponse:
-		return []tag.Tag{
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowRunID(r.GetRunId()),
+			},
 		}
 	case *workflowservice.PollActivityTaskQueueRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.PollActivityTaskQueueResponse:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
 		}
 	case *workflowservice.PollNexusOperationExecutionRequest:
-		return []tag.Tag{
-			tag.OperationID(r.GetOperationId()),
-			tag.ChasmRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.OperationID(r.GetOperationId()),
+				tag.ChasmRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.PollNexusOperationExecutionResponse:
-		return []tag.Tag{
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowRunID(r.GetRunId()),
+			},
 		}
 	case *workflowservice.PollNexusTaskQueueRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.PollNexusTaskQueueResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.PollWorkflowExecutionTimeSkippingRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.PollWorkflowExecutionTimeSkippingResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.PollWorkflowExecutionUpdateRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetUpdateRef().GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetUpdateRef().GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetUpdateRef().GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetUpdateRef().GetWorkflowExecution().GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.PollWorkflowExecutionUpdateResponse:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetUpdateRef().GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetUpdateRef().GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetUpdateRef().GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetUpdateRef().GetWorkflowExecution().GetRunId()),
+			},
 		}
 	case *workflowservice.PollWorkflowTaskQueueRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.PollWorkflowTaskQueueResponse:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
 		}
 	case *workflowservice.QueryWorkflowRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.QueryWorkflowResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.RecordActivityTaskHeartbeatRequest:
-		return wt.fromTaskToken(r.GetTaskToken())
+		return extractedTags{
+			tags: wt.fromTaskToken(r.GetTaskToken()),
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.RecordActivityTaskHeartbeatResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.RecordActivityTaskHeartbeatByIdRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowId()),
-			tag.ActivityID(r.GetActivityId()),
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowId()),
+				tag.ActivityID(r.GetActivityId()),
+				tag.WorkflowRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.RecordActivityTaskHeartbeatByIdResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.RecordWorkerHeartbeatRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.RecordWorkerHeartbeatResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.RegisterNamespaceRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.RegisterNamespaceResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.RequestCancelActivityExecutionRequest:
-		return []tag.Tag{
-			tag.ActivityID(r.GetActivityId()),
-			tag.ChasmRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.ActivityID(r.GetActivityId()),
+				tag.ChasmRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.RequestCancelActivityExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.RequestCancelNexusOperationExecutionRequest:
-		return []tag.Tag{
-			tag.OperationID(r.GetOperationId()),
-			tag.ChasmRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.OperationID(r.GetOperationId()),
+				tag.ChasmRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.RequestCancelNexusOperationExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.RequestCancelWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.RequestCancelWorkflowExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ResetActivityRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.ResetActivityResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ResetActivityExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowId()),
-			tag.ActivityID(r.GetActivityId()),
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowId()),
+				tag.ActivityID(r.GetActivityId()),
+				tag.WorkflowRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.ResetActivityExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ResetStickyTaskQueueRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.ResetStickyTaskQueueResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ResetWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.ResetWorkflowExecutionResponse:
-		return []tag.Tag{
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowRunID(r.GetRunId()),
+			},
 		}
 	case *workflowservice.RespondActivityTaskCanceledRequest:
-		return wt.fromTaskToken(r.GetTaskToken())
+		return extractedTags{
+			tags: wt.fromTaskToken(r.GetTaskToken()),
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.RespondActivityTaskCanceledResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.RespondActivityTaskCanceledByIdRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowId()),
-			tag.ActivityID(r.GetActivityId()),
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowId()),
+				tag.ActivityID(r.GetActivityId()),
+				tag.WorkflowRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.RespondActivityTaskCanceledByIdResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.RespondActivityTaskCompletedRequest:
-		return wt.fromTaskToken(r.GetTaskToken())
+		return extractedTags{
+			tags: wt.fromTaskToken(r.GetTaskToken()),
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.RespondActivityTaskCompletedResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.RespondActivityTaskCompletedByIdRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowId()),
-			tag.ActivityID(r.GetActivityId()),
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowId()),
+				tag.ActivityID(r.GetActivityId()),
+				tag.WorkflowRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.RespondActivityTaskCompletedByIdResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.RespondActivityTaskFailedRequest:
-		return wt.fromTaskToken(r.GetTaskToken())
+		return extractedTags{
+			tags: wt.fromTaskToken(r.GetTaskToken()),
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.RespondActivityTaskFailedResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.RespondActivityTaskFailedByIdRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowId()),
-			tag.ActivityID(r.GetActivityId()),
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowId()),
+				tag.ActivityID(r.GetActivityId()),
+				tag.WorkflowRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.RespondActivityTaskFailedByIdResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.RespondNexusTaskCompletedRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.RespondNexusTaskCompletedResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.RespondNexusTaskFailedRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.RespondNexusTaskFailedResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.RespondQueryTaskCompletedRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.RespondQueryTaskCompletedResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.RespondWorkflowTaskCompletedRequest:
-		return wt.fromTaskToken(r.GetTaskToken())
+		return extractedTags{
+			tags: wt.fromTaskToken(r.GetTaskToken()),
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.RespondWorkflowTaskCompletedResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.RespondWorkflowTaskFailedRequest:
-		return wt.fromTaskToken(r.GetTaskToken())
+		return extractedTags{
+			tags: wt.fromTaskToken(r.GetTaskToken()),
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.RespondWorkflowTaskFailedResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ScanWorkflowExecutionsRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.ScanWorkflowExecutionsResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.SetCurrentDeploymentRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.SetCurrentDeploymentResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.SetWorkerDeploymentCurrentVersionRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.SetWorkerDeploymentCurrentVersionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.SetWorkerDeploymentManagerRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.SetWorkerDeploymentManagerResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.SetWorkerDeploymentRampingVersionRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.SetWorkerDeploymentRampingVersionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ShutdownWorkerRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.ShutdownWorkerResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.SignalWithStartWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.SignalWithStartWorkflowExecutionResponse:
-		return []tag.Tag{
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowRunID(r.GetRunId()),
+			},
 		}
 	case *workflowservice.SignalWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.SignalWorkflowExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.StartActivityExecutionRequest:
-		return []tag.Tag{
-			tag.ActivityID(r.GetActivityId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.ActivityID(r.GetActivityId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.StartActivityExecutionResponse:
-		return []tag.Tag{
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowRunID(r.GetRunId()),
+			},
 		}
 	case *workflowservice.StartBatchOperationRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.StartBatchOperationResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.StartNexusOperationExecutionRequest:
-		return []tag.Tag{
-			tag.OperationID(r.GetOperationId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.OperationID(r.GetOperationId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.StartNexusOperationExecutionResponse:
-		return []tag.Tag{
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowRunID(r.GetRunId()),
+			},
 		}
 	case *workflowservice.StartWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.StartWorkflowExecutionResponse:
-		return []tag.Tag{
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowRunID(r.GetRunId()),
+			},
 		}
 	case *workflowservice.StopBatchOperationRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.StopBatchOperationResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.TerminateActivityExecutionRequest:
-		return []tag.Tag{
-			tag.ActivityID(r.GetActivityId()),
-			tag.ChasmRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.ActivityID(r.GetActivityId()),
+				tag.ChasmRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.TerminateActivityExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.TerminateNexusOperationExecutionRequest:
-		return []tag.Tag{
-			tag.OperationID(r.GetOperationId()),
-			tag.ChasmRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.OperationID(r.GetOperationId()),
+				tag.ChasmRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.TerminateNexusOperationExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.TerminateWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.TerminateWorkflowExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.TriggerWorkflowRuleRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.TriggerWorkflowRuleResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.UnpauseActivityRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.UnpauseActivityResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.UnpauseActivityExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowId()),
-			tag.ActivityID(r.GetActivityId()),
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowId()),
+				tag.ActivityID(r.GetActivityId()),
+				tag.WorkflowRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.UnpauseActivityExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.UnpauseWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowId()),
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowId()),
+				tag.WorkflowRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.UnpauseWorkflowExecutionResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.UpdateActivityExecutionOptionsRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowId()),
-			tag.ActivityID(r.GetActivityId()),
-			tag.WorkflowRunID(r.GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowId()),
+				tag.ActivityID(r.GetActivityId()),
+				tag.WorkflowRunID(r.GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.UpdateActivityExecutionOptionsResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.UpdateActivityOptionsRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetExecution().GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.UpdateActivityOptionsResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.UpdateNamespaceRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.UpdateNamespaceResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.UpdateScheduleRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.UpdateScheduleResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.UpdateTaskQueueConfigRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.UpdateTaskQueueConfigResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.UpdateWorkerBuildIdCompatibilityRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.UpdateWorkerBuildIdCompatibilityResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.UpdateWorkerConfigRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.UpdateWorkerConfigResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.UpdateWorkerDeploymentVersionComputeConfigRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.UpdateWorkerDeploymentVersionComputeConfigResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.UpdateWorkerDeploymentVersionMetadataRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.UpdateWorkerDeploymentVersionMetadataResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.UpdateWorkerVersioningRulesRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.UpdateWorkerVersioningRulesResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.UpdateWorkflowExecutionRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.UpdateWorkflowExecutionResponse:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetUpdateRef().GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetUpdateRef().GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetUpdateRef().GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetUpdateRef().GetWorkflowExecution().GetRunId()),
+			},
 		}
 	case *workflowservice.UpdateWorkflowExecutionOptionsRequest:
-		return []tag.Tag{
-			tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
-			tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+		return extractedTags{
+			tags: []tag.Tag{
+				tag.WorkflowID(r.GetWorkflowExecution().GetWorkflowId()),
+				tag.WorkflowRunID(r.GetWorkflowExecution().GetRunId()),
+			},
+			namespace: r.GetNamespace(),
 		}
 	case *workflowservice.UpdateWorkflowExecutionOptionsResponse:
-		return nil
+		return extractedTags{}
 	case *workflowservice.ValidateWorkerDeploymentVersionComputeConfigRequest:
-		return nil
+		return extractedTags{
+			namespace: r.GetNamespace(),
+		}
 	case *workflowservice.ValidateWorkerDeploymentVersionComputeConfigResponse:
-		return nil
+		return extractedTags{}
 	default:
-		return nil
+		return extractedTags{}
 	}
 }
