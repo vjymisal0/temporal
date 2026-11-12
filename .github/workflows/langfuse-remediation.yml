@@ -14,6 +14,12 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=6144
       TURBO_TELEMETRY_DISABLED: '1'
       DO_NOT_TRACK: '1'
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/langfuse
+      NEXTAUTH_URL: http://localhost:3000
+      SALT: local-hosted-validation-salt-17383
+      CLICKHOUSE_URL: http://localhost:8123
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: local-validation
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
         with:
