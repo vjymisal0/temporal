@@ -8,12 +8,12 @@ concurrency:
   group: temporal-remediation-validation
   cancel-in-progress: false
 env:
-  SOURCE_SHA: 84806e41afbc370a411ce3e568e56ec7c693b0e6
+  SOURCE_SHA: d1adf2a72621f90ee07cbf03fc3eb10f4f525e03
   BASE_SHA: 03ecd1d228d2b8d9d433da55785afc9aeeead918
   CONTROL_BEFORE_SHA: e7f3ed721c75a53fb5cb3ae772482584d7792cda
-  CONTROL_MODE: version-checker
-  COMMIT: 84806e41afbc370a411ce3e568e56ec7c693b0e6
-  GOMAXPROCS: '2'
+  CONTROL_MODE: archival
+  COMMIT: d1adf2a72621f90ee07cbf03fc3eb10f4f525e03
+  GOMAXPROCS: '4'
   CGO_ENABLED: '1'
 jobs:
   validate:
@@ -43,8 +43,8 @@ jobs:
           import json, pathlib, subprocess, sys
           out = pathlib.Path('.remediation-validation')
           commands = [
-              ('units', ['go', 'test', '-json', '-tags', 'test_dep,disable_grpc_modules', '-p', '2', '-parallel', '4', '-count=1', '-timeout', '15m', './common/versioninfo', './service/frontend']),
-              ('race', ['go', 'test', '-race', '-json', '-tags', 'test_dep,disable_grpc_modules', '-p', '2', '-parallel', '4', '-count=1', '-timeout', '5m', './common/versioninfo', './service/frontend', '-run', 'Test(Caller|VersionChecker)']),
+              ('units', ['go', 'test', '-json', '-tags', 'test_dep,disable_grpc_modules', '-p', '4', '-parallel', '4', '-count=1', '-timeout', '15m', './common/versioninfo', './service/frontend']),
+              ('race', ['go', 'test', '-race', '-json', '-tags', 'test_dep,disable_grpc_modules', '-p', '4', '-parallel', '4', '-count=1', '-timeout', '5m', './common/versioninfo', './service/frontend', '-run', 'Test(ArchivalURIErrorContext|NamespaceHandlerCommonSuite)']),
           ]
           rows = []
           for name, command in commands:
@@ -80,7 +80,7 @@ jobs:
               prior = subprocess.check_output(['git', 'show', os.environ['CONTROL_BEFORE_SHA'] + ':' + str(path)])
               path.write_bytes(prior)
               with (out / 'lifecycle-control.log').open('wb') as log:
-                  result = subprocess.run(['go', 'test', '-race', '-v', '-tags', 'test_dep,disable_grpc_modules', '-p', '2', '-count=1', '-timeout', '2m', './service/frontend', '-run', '^TestVersionChecker'], stdout=log, stderr=subprocess.STDOUT)
+                  result = subprocess.run(['go', 'test', '-race', '-v', '-tags', 'test_dep,disable_grpc_modules', '-p', '4', '-count=1', '-timeout', '2m', './service/frontend', '-run', '^TestVersionChecker'], stdout=log, stderr=subprocess.STDOUT)
               body = (out / 'lifecycle-control.log').read_text(errors='replace')
               assert result.returncode != 0, 'Prior lifecycle unexpectedly passed'
               assert 'WARNING: DATA RACE' in body and 'version_checker.go' in body, body[-9000:]
@@ -96,10 +96,39 @@ jobs:
               assert final.count(old) == 1
               path.write_bytes(final.replace(old, b'http.NewRequest("POST", u.String(), bytes.NewReader(reqBody))'))
               with (out / 'caller-control.log').open('wb') as log:
-                  result = subprocess.run(['go', 'test', '-v', '-tags', 'test_dep,disable_grpc_modules', '-p', '2', '-count=1', '-timeout', '1m', './common/versioninfo', '-run', '^TestCallerCancellation$'], stdout=log, stderr=subprocess.STDOUT)
+                  result = subprocess.run(['go', 'test', '-v', '-tags', 'test_dep,disable_grpc_modules', '-p', '4', '-count=1', '-timeout', '1m', './common/versioninfo', '-run', '^TestCallerCancellation$'], stdout=log, stderr=subprocess.STDOUT)
               body = (out / 'caller-control.log').read_text(errors='replace')
               assert result.returncode != 0 and 'FAIL: TestCallerCancellation' in body, body[-9000:]
               rows.append({'control': 'request context omitted', 'expected_failure': True})
+          finally:
+              path.write_bytes(final)
+              assert path.read_bytes() == final
+          subprocess.run(['git', 'diff', '--exit-code', '--', '*.go', 'go.mod', 'go.sum'], check=True)
+          (out / 'controls-summary.json').write_text(json.dumps(rows, indent=2))
+          print(json.dumps(rows), flush=True)
+          PY
+      - name: Archival error regressions against exact base
+        if: always() && steps.prepare.outcome == 'success' && env.CONTROL_MODE == 'archival'
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib, subprocess
+          out = pathlib.Path('.remediation-validation')
+          path = pathlib.Path('service/frontend/namespace_handler.go')
+          final = path.read_bytes()
+          rows = []
+          try:
+              path.write_bytes(subprocess.check_output(['git', 'show', os.environ['BASE_SHA'] + ':' + str(path)]))
+              cases = [
+                  ('uri-context', '^TestArchivalURIErrorContext$', 'FAIL: TestArchivalURIErrorContext'),
+                  ('register-context', '^TestNamespaceHandlerCommonSuite$/^TestRegisterNamespace_InvalidHistoryArchivalURIIncludesUnderlyingError$', 'FAIL: TestNamespaceHandlerCommonSuite/TestRegisterNamespace_InvalidHistoryArchivalURIIncludesUnderlyingError'),
+              ]
+              for name, pattern, expected in cases:
+                  logpath = out / (name + '-base-control.log')
+                  with logpath.open('wb') as log:
+                      result = subprocess.run(['go', 'test', '-v', '-tags', 'test_dep,disable_grpc_modules', '-p', '4', '-count=1', '-timeout', '2m', './service/frontend', '-run', pattern], stdout=log, stderr=subprocess.STDOUT)
+                  body = logpath.read_text(errors='replace')
+                  assert result.returncode != 0 and expected in body, body[-9000:]
+                  rows.append({'control': name, 'expected_failure': True, 'base': os.environ['BASE_SHA']})
           finally:
               path.write_bytes(final)
               assert path.read_bytes() == final
