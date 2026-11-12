@@ -1,0 +1,83 @@
+name: Langfuse PR 17383 exact source validation
+on:
+  push:
+    branches: ['remediation-ci/langfuse-17383-*']
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      SOURCE_SHA: 71c55d418fa0adff31456718c073cad9baf0dd92
+      BASE_SHA: 4496c729ab2d26db2c5c67ab79590c9b7ae9a214
+      NODE_OPTIONS: --max-old-space-size=6144
+      TURBO_TELEMETRY_DISABLED: '1'
+      DO_NOT_TRACK: '1'
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        with:
+          repository: vjymisal0/langfuse
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          filter: blob:none
+          persist-credentials: false
+      - name: Verify exact source and scope
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git merge-base --is-ancestor "$BASE_SHA" HEAD
+          mkdir -p .remediation-validation
+          git rev-parse HEAD > .remediation-validation/source-sha.txt
+          git diff --stat "$BASE_SHA"...HEAD | tee .remediation-validation/scope.txt
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320
+        with:
+          version: '12.16.1'
+          run_install: false
+      - name: Install locked dependencies with normal hooks
+        id: install
+        run: |
+          set -o pipefail
+          pnpm install --frozen-lockfile 2>&1 | tee .remediation-validation/install.log
+      - name: Run targeted client utility tests and verify baseline regression
+        if: always() && steps.install.outcome == 'success'
+        run: |
+          set -o pipefail
+          pnpm --filter web run test-client src/utils/fill-time-series-gaps.clienttest.ts 2>&1 | tee .remediation-validation/client-tests.log
+          cp web/src/utils/fill-time-series-gaps.ts /tmp/fill-time-series-gaps.ts
+          git show "$BASE_SHA:web/src/utils/fill-time-series-gaps.ts" > web/src/utils/fill-time-series-gaps.ts
+          set +e
+          pnpm --filter web run test-client src/utils/fill-time-series-gaps.clienttest.ts > .remediation-validation/baseline-tests.log 2>&1
+          baseline_status=$?
+          set -e
+          cp /tmp/fill-time-series-gaps.ts web/src/utils/fill-time-series-gaps.ts
+          cat .remediation-validation/baseline-tests.log
+          test "$baseline_status" != 0
+          grep -q 'Tests.*failed' .remediation-validation/baseline-tests.log
+      - name: Run repository lint without replaying cached tasks
+        if: always() && steps.install.outcome == 'success'
+        run: |
+          set -o pipefail
+          pnpm exec turbo run lint --force 2>&1 | tee .remediation-validation/lint.log
+      - name: Typecheck web with dependency builds
+        if: always() && steps.install.outcome == 'success'
+        run: |
+          set -o pipefail
+          pnpm exec turbo run typecheck --filter=web --force 2>&1 | tee .remediation-validation/typecheck.log
+      - name: Check changed-file formatting
+        if: always() && steps.install.outcome == 'success'
+        run: |
+          set -o pipefail
+          pnpm exec prettier --check web/src/utils/fill-time-series-gaps.ts web/src/utils/fill-time-series-gaps.clienttest.ts 2>&1 | tee .remediation-validation/format.log
+      - name: Check source restoration
+        if: always()
+        run: git diff --exit-code -- web/src/utils/fill-time-series-gaps.ts web/src/utils/fill-time-series-gaps.clienttest.ts pnpm-lock.yaml
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        if: always()
+        with:
+          name: langfuse-17383-validation
+          path: .remediation-validation
+          include-hidden-files: true
+          retention-days: 7
