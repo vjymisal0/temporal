@@ -1,0 +1,95 @@
+name: Public Devtron snapshot validation
+on:
+  push:
+    branches: ['remediation-ci/devtron-*']
+permissions:
+  contents: read
+concurrency:
+  group: devtron-remediation-${{ github.sha }}
+  cancel-in-progress: false
+env:
+  BASE_SHA: 6d3522367a1cf5dc1d6dbe8b50e7f41e542ff94d
+  GOMAXPROCS: '4'
+  CGO_ENABLED: '0'
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - pr: '7025'
+            source: b9a70584e87c1090b5d0d46c294ec647cd7e812f
+            packages: ./pkg/auth/user
+          - pr: '7024'
+            source: 06f432fbb85cf39bbb7a0d0c89005a710c63660b
+            packages: ./pkg/appStore/discover/repository ./pkg/auth/user/repository
+    env:
+      SOURCE_SHA: ${{ matrix.source }}
+      TEST_PACKAGES: ${{ matrix.packages }}
+    steps:
+      - name: Check out exact implementation
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        with:
+          repository: vjymisal0/devtron
+          ref: ${{ matrix.source }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Record exact source
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git merge-base --is-ancestor "$BASE_SHA" HEAD
+          mkdir -p .remediation-validation
+          git rev-parse HEAD > .remediation-validation/source-sha.txt
+          git diff --stat "$BASE_SHA"...HEAD > .remediation-validation/scope.txt
+      - name: Prepare repository Go version
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: go.mod
+      - name: Test changed packages and verify formatting
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib, subprocess, sys
+          out = pathlib.Path('.remediation-validation')
+          paths = subprocess.check_output(['git', 'diff', '--name-only', '-z', os.environ['BASE_SHA'] + '...HEAD', '--', '*.go']).decode().split('\0')
+          for name in filter(None, paths):
+              assert subprocess.check_output(['gofmt', name]) == pathlib.Path(name).read_bytes(), name
+          command = ['go', 'test', '-json', '-p', '2', '-parallel', '4', '-count=1', '-timeout', '10m'] + os.environ['TEST_PACKAGES'].split()
+          path = out / 'units.jsonl'
+          with path.open('wb') as log:
+              result = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT)
+          counts = {'pass': 0, 'fail': 0, 'skip': 0}
+          failed = []
+          for line in path.read_text(errors='replace').splitlines():
+              try: event = json.loads(line)
+              except ValueError: continue
+              if event.get('Test') and event.get('Action') in counts:
+                  counts[event['Action']] += 1
+                  if event['Action'] == 'fail': failed.append(event['Test'])
+          row = {'exit_code': result.returncode, 'test_events': counts, 'failed': failed}
+          (out / 'tests-summary.json').write_text(json.dumps(row, indent=2))
+          print(json.dumps(row), flush=True)
+          if result.returncode: print(path.read_text(errors='replace')[-10000:])
+          sys.exit(result.returncode)
+          PY
+      - name: Vet changed packages
+        run: |
+          python3 - <<'PY'
+          import os, pathlib, subprocess, sys
+          with pathlib.Path('.remediation-validation/vet.log').open('wb') as log:
+              result = subprocess.run(['go', 'vet', '-p', '2'] + os.environ['TEST_PACKAGES'].split(), stdout=log, stderr=subprocess.STDOUT)
+          print(pathlib.Path('.remediation-validation/vet.log').read_text(errors='replace'))
+          sys.exit(result.returncode)
+          PY
+      - name: Verify source preservation
+        if: always()
+        run: git diff --exit-code -- '*.go' go.mod go.sum
+      - name: Preserve validation evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: devtron-remediation-${{ matrix.pr }}
+          path: .remediation-validation
+          include-hidden-files: true
+          retention-days: 7
