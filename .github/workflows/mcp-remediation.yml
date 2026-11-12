@@ -1,0 +1,32 @@
+name: Supabase MCP documentation validation
+on:
+  push:
+    branches: [remediation-ci/mcp-validation-20261112]
+permissions:
+  contents: read
+jobs:
+  unit-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        with:
+          repository: vjymisal0/mcp
+          ref: 3cf5c7ee2793ca0e264586e80cf3e0c74cd8062d
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320
+        with:
+          version: 10
+      - name: Normal immutable dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build all packages with type checks
+        run: pnpm build
+      - name: Existing Supabase unit suites
+        run: pnpm --filter @supabase/mcp-server-supabase test:unit --run
+      - name: Changed file formatting and source preservation
+        run: |
+          pnpm exec biome check packages/mcp-server-supabase/src/tools/database-operation-tools.ts
+          git diff --exit-code
