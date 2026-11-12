@@ -1,0 +1,134 @@
+name: Targeted remediation validation
+on:
+  push:
+    branches: ['remediation-ci/temporal-*']
+permissions:
+  contents: read
+concurrency:
+  group: temporal-remediation-validation
+  cancel-in-progress: false
+env:
+  SOURCE_SHA: 84806e41afbc370a411ce3e568e56ec7c693b0e6
+  BASE_SHA: 03ecd1d228d2b8d9d433da55785afc9aeeead918
+  CONTROL_BEFORE_SHA: e7f3ed721c75a53fb5cb3ae772482584d7792cda
+  CONTROL_MODE: version-checker
+  COMMIT: 84806e41afbc370a411ce3e568e56ec7c693b0e6
+  GOMAXPROCS: '2'
+  CGO_ENABLED: '1'
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact implementation
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          filter: blob:none
+          persist-credentials: false
+      - name: Record exact source
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git merge-base --is-ancestor "$BASE_SHA" HEAD
+          mkdir -p .remediation-validation
+          git rev-parse HEAD > .remediation-validation/source-sha.txt
+          git diff --stat "$BASE_SHA"...HEAD > .remediation-validation/scope.txt
+      - name: Prepare pinned Go and dependency caches
+        id: prepare
+        uses: ./.github/actions/prepare-go
+      - name: Full relevant units and focused race tests
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, subprocess, sys
+          out = pathlib.Path('.remediation-validation')
+          commands = [
+              ('units', ['go', 'test', '-json', '-tags', 'test_dep,disable_grpc_modules', '-p', '2', '-parallel', '4', '-count=1', '-timeout', '15m', './common/versioninfo', './service/frontend']),
+              ('race', ['go', 'test', '-race', '-json', '-tags', 'test_dep,disable_grpc_modules', '-p', '2', '-parallel', '4', '-count=1', '-timeout', '5m', './common/versioninfo', './service/frontend', '-run', 'Test(Caller|VersionChecker)']),
+          ]
+          rows = []
+          for name, command in commands:
+              path = out / (name + '.jsonl')
+              with path.open('wb') as log:
+                  result = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT)
+              counts = {'pass': 0, 'fail': 0, 'skip': 0}
+              failed = []
+              for line in path.read_text(errors='replace').splitlines():
+                  try: event = json.loads(line)
+                  except ValueError: continue
+                  if event.get('Test') and event.get('Action') in counts:
+                      counts[event['Action']] += 1
+                      if event['Action'] == 'fail': failed.append(event['Test'])
+              row = {'name': name, 'exit_code': result.returncode, 'test_events': counts, 'failed': failed}
+              rows.append(row)
+              (out / 'tests-summary.json').write_text(json.dumps(rows, indent=2))
+              print(json.dumps(row), flush=True)
+              if result.returncode:
+                  print(path.read_text(errors='replace')[-9000:])
+                  sys.exit(result.returncode)
+          PY
+      - name: Regression controls against prior behavior
+        if: always() && steps.prepare.outcome == 'success' && env.CONTROL_MODE == 'version-checker'
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib, subprocess
+          out = pathlib.Path('.remediation-validation')
+          rows = []
+          path = pathlib.Path('service/frontend/version_checker.go')
+          final = path.read_bytes()
+          try:
+              prior = subprocess.check_output(['git', 'show', os.environ['CONTROL_BEFORE_SHA'] + ':' + str(path)])
+              path.write_bytes(prior)
+              with (out / 'lifecycle-control.log').open('wb') as log:
+                  result = subprocess.run(['go', 'test', '-race', '-v', '-tags', 'test_dep,disable_grpc_modules', '-p', '2', '-count=1', '-timeout', '2m', './service/frontend', '-run', '^TestVersionChecker'], stdout=log, stderr=subprocess.STDOUT)
+              body = (out / 'lifecycle-control.log').read_text(errors='replace')
+              assert result.returncode != 0, 'Prior lifecycle unexpectedly passed'
+              assert 'WARNING: DATA RACE' in body and 'version_checker.go' in body, body[-9000:]
+              assert 'TestVersionCheckerStopCancelsRequest/disabled_after_start' in body, body[-9000:]
+              rows.append({'control': 'prior lifecycle', 'expected_failure': True, 'race_reproduced': True, 'disabled_shutdown_reproduced': True})
+          finally:
+              path.write_bytes(final)
+              assert path.read_bytes() == final
+          path = pathlib.Path('common/versioninfo/caller.go')
+          final = path.read_bytes()
+          try:
+              old = b'http.NewRequestWithContext(ctx, "POST", u.String(), bytes.NewReader(reqBody))'
+              assert final.count(old) == 1
+              path.write_bytes(final.replace(old, b'http.NewRequest("POST", u.String(), bytes.NewReader(reqBody))'))
+              with (out / 'caller-control.log').open('wb') as log:
+                  result = subprocess.run(['go', 'test', '-v', '-tags', 'test_dep,disable_grpc_modules', '-p', '2', '-count=1', '-timeout', '1m', './common/versioninfo', '-run', '^TestCallerCancellation$'], stdout=log, stderr=subprocess.STDOUT)
+              body = (out / 'caller-control.log').read_text(errors='replace')
+              assert result.returncode != 0 and 'FAIL: TestCallerCancellation' in body, body[-9000:]
+              rows.append({'control': 'request context omitted', 'expected_failure': True})
+          finally:
+              path.write_bytes(final)
+              assert path.read_bytes() == final
+          subprocess.run(['git', 'diff', '--exit-code', '--', '*.go', 'go.mod', 'go.sum'], check=True)
+          (out / 'controls-summary.json').write_text(json.dumps(rows, indent=2))
+          print(json.dumps(rows), flush=True)
+          PY
+      - name: Required fast code lint target
+        if: always() && steps.prepare.outcome == 'success'
+        run: |
+          set +e
+          make lint-code-fast GOLANGCI_LINT_BASE_REV="$BASE_SHA" GOLANGCI_LINT_FIX=false > .remediation-validation/lint.log 2>&1
+          status=$?
+          tail -n 100 .remediation-validation/lint.log
+          printf '%s\n' "$status" > .remediation-validation/lint-exit.txt
+          exit "$status"
+      - name: Verify final source restoration
+        if: always()
+        run: git diff --exit-code -- '*.go' go.mod go.sum
+      - name: Preserve validation evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: temporal-remediation-evidence
+          path: .remediation-validation
+          retention-days: 7
+      - name: Save compiled Go cache
+        if: always() && steps.prepare.outputs.build_cache_primary_key != ''
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae
+        with:
+          path: ${{ steps.prepare.outputs.build_cache_path }}
+          key: ${{ steps.prepare.outputs.build_cache_primary_key }}
