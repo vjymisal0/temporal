@@ -1,0 +1,68 @@
+name: Public Studio locale snapshot validation
+on:
+  push:
+    branches: ['remediation-ci/studio-*']
+permissions:
+  contents: read
+concurrency:
+  group: studio-remediation-${{ github.sha }}
+  cancel-in-progress: false
+env:
+  SOURCE_SHA: 5b66e6fb2d725b296afce609f52cbd7d0b6d3b0f
+  BASE_SHA: a4afeec72cae124a1c8ea21b05cc0a43fcc03737
+  NODE_OPTIONS: --max-old-space-size=4096
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out exact implementation
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        with:
+          repository: vjymisal0/studio
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Record exact source
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git merge-base --is-ancestor "$BASE_SHA" HEAD
+          mkdir -p .remediation-validation
+          git rev-parse HEAD > .remediation-validation/source-sha.txt
+          git diff --stat "$BASE_SHA"...HEAD > .remediation-validation/scope.txt
+      - name: Prepare Node and declared npm version
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Install locked dependencies with normal lifecycle scripts
+        id: install
+        run: |
+          set -o pipefail
+          npm install --global npm@11.13.0
+          npm ci 2>&1 | tee .remediation-validation/install.log
+      - name: Lint and format changed files as required
+        run: |
+          set -o pipefail
+          npx eslint --fix apps/cli/lib/i18n.ts packages/common/lib/locale.ts packages/common/lib/tests/locale.test.ts 2>&1 | tee .remediation-validation/lint.log
+      - name: Build CLI before testing
+        run: |
+          set -o pipefail
+          npm run cli:build 2>&1 | tee .remediation-validation/cli-build.log
+      - name: Test locale catalog behavior
+        run: npm test -- packages/common/lib/tests/locale.test.ts --reporter=json --outputFile=.remediation-validation/units.json > .remediation-validation/units.log 2>&1
+      - name: Check workspace types
+        if: always() && steps.install.outcome == 'success'
+        run: |
+          set -o pipefail
+          npm run typecheck 2>&1 | tee .remediation-validation/typecheck.log
+      - name: Verify source preservation
+        if: always()
+        run: git diff --exit-code -- '*.ts' '*.tsx' '*.json' package-lock.json
+      - name: Preserve validation evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: studio-remediation-5913
+          path: .remediation-validation
+          include-hidden-files: true
+          retention-days: 7
