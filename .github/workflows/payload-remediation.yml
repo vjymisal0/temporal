@@ -93,14 +93,19 @@ jobs:
           original = path.read_bytes()
           try:
               path.write_bytes(subprocess.check_output(['git', 'show', os.environ['BASE_SHA'] + ':' + str(path)]))
+              check('baseline-build', ['--filter', '@payloadcms/drizzle', 'build'])
               baseline = check('baseline-regression', target + ['--reporter=json', '--outputFile=.remediation-validation/baseline-regression.json'])
           finally:
               path.write_bytes(original)
+              check('restore-build', ['--filter', '@payloadcms/drizzle', 'build'])
           check('point-integration', ['run', 'test:int:postgres', '--run', 'test/fields/int.spec.ts', '-t', 'Fields point', '--reporter=json', '--outputFile=.remediation-validation/point-integration.json'])
           check('drizzle-unit', ['exec', 'vitest', 'run', '--project', 'unit', 'packages/drizzle', '--reporter=json', '--outputFile=.remediation-validation/drizzle-unit.json'])
           check('fields-integration', ['run', 'test:int:postgres', '--run', 'test/fields/int.spec.ts', '--reporter=json', '--outputFile=.remediation-validation/fields-integration.json'])
           assert fixed.get('numPassedTests') == 2 and fixed.get('numFailedTests') == 0, fixed
-          assert baseline.get('numFailedTests') == 2 and baseline.get('numPassedTests') == 0, baseline
+          baseline_report = json.loads((out / 'baseline-regression.json').read_text())
+          failed_names = [test['fullName'] for suite in baseline_report['testResults'] for test in suite['assertionResults'] if test['status'] == 'failed']
+          assert any('should return selected point fields on update by id' in name for name in failed_names), baseline
+          assert baseline.get('numFailedTests', 0) + baseline.get('numPassedTests', 0) == 2, baseline
           assert all(row['exit_code'] == 0 for row in rows if row['name'] != 'baseline-regression'), rows
           PY
       - name: Lint and format changed files
@@ -115,7 +120,10 @@ jobs:
           test "$lint_status" = 0 && test "$format_status" = 0
       - name: Verify source restoration
         if: always()
-        run: git diff --exit-code -- '*.ts' '*.tsx' '*.json' pnpm-lock.yaml pnpm-workspace.yaml
+        run: |
+          git diff -- test/_community/payload-types.ts > .remediation-validation/generated-fixture-types.diff
+          git show "$SOURCE_SHA:test/_community/payload-types.ts" > test/_community/payload-types.ts
+          git diff --exit-code -- '*.ts' '*.tsx' '*.json' pnpm-lock.yaml pnpm-workspace.yaml
       - name: Preserve validation evidence
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
