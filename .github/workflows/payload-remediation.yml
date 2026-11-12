@@ -1,0 +1,126 @@
+name: Public Payload snapshot PostGIS validation
+on:
+  push:
+    branches: ['remediation-ci/payload-*']
+permissions:
+  contents: read
+concurrency:
+  group: payload-remediation-${{ github.sha }}
+  cancel-in-progress: false
+env:
+  SOURCE_SHA: bc6bb0f33a3290db73dc4ce03c595eea9b0df6a1
+  BASE_SHA: d50e6e0dedb402d31fb6af1081ec8bc77fc8454c
+  NODE_OPTIONS: --max-old-space-size=4096
+  TURBO_TELEMETRY_DISABLED: '1'
+  NEXT_TELEMETRY_DISABLED: '1'
+  DO_NOT_TRACK: '1'
+  POSTGRES_URL: postgres://payload:payload@127.0.0.1:5433/payload
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    services:
+      postgres:
+        image: ghcr.io/payloadcms/postgis-vector:latest
+        ports: ['5433:5432']
+        env:
+          POSTGRES_USER: payload
+          POSTGRES_PASSWORD: payload
+          POSTGRES_DB: payload
+        options: >-
+          --health-cmd "pg_isready -U payload -d payload"
+          --health-interval 5s --health-timeout 5s --health-retries 30
+    steps:
+      - name: Check out exact implementation
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        with:
+          repository: vjymisal0/payload
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          filter: blob:none
+          persist-credentials: false
+      - name: Record exact source
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git merge-base --is-ancestor "$BASE_SHA" HEAD
+          mkdir -p .remediation-validation
+          git rev-parse HEAD > .remediation-validation/source-sha.txt
+          git diff --stat "$BASE_SHA"...HEAD > .remediation-validation/scope.txt
+      - name: Prepare repository Node version
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22.23.4'
+      - name: Prepare repository pnpm version
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320
+        with:
+          version: '11.28.6'
+          run_install: false
+      - name: Install locked dependencies with normal lifecycle scripts
+        id: install
+        run: |
+          set -o pipefail
+          test "$(node --version)" = 'v22.23.4'
+          test "$(pnpm --version)" = '11.28.6'
+          pnpm --filter 'payload-monorepo...' --filter 'payload-test-suite...' install --frozen-lockfile 2>&1 | tee .remediation-validation/install.log
+      - name: Build Drizzle and dependencies including declaration checks
+        id: build
+        run: |
+          set -o pipefail
+          pnpm turbo build --filter '@payloadcms/drizzle...' --concurrency=2 2>&1 | tee .remediation-validation/build.log
+      - name: Validate PostGIS regressions and relevant suites
+        if: always() && steps.install.outcome == 'success'
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib, subprocess, sys
+          out = pathlib.Path('.remediation-validation')
+          rows = []
+          def check(name, args):
+              with (out / (name + '.log')).open('wb') as log:
+                  result = subprocess.run(['pnpm'] + args, stdout=log, stderr=subprocess.STDOUT)
+              row = {'name': name, 'exit_code': result.returncode}
+              path = out / (name + '.json')
+              if path.exists():
+                  data = json.loads(path.read_text())
+                  row.update({k: data.get(k) for k in ['numPassedTests', 'numFailedTests', 'numPendingTests', 'success']})
+              rows.append(row)
+              (out / 'validation-summary.json').write_text(json.dumps(rows, indent=2))
+              print(json.dumps(row), flush=True)
+              if result.returncode: print((out / (name + '.log')).read_text(errors='replace')[-9000:])
+              return row
+          target = ['run', 'test:int:postgres', '--run', 'test/fields/int.spec.ts', '-t', 'should return (selected point fields|point field) on update by id']
+          fixed = check('regression', target + ['--reporter=json', '--outputFile=.remediation-validation/regression.json'])
+          path = pathlib.Path('packages/drizzle/src/upsertRow/index.ts')
+          original = path.read_bytes()
+          try:
+              path.write_bytes(subprocess.check_output(['git', 'show', os.environ['BASE_SHA'] + ':' + str(path)]))
+              baseline = check('baseline-regression', target + ['--reporter=json', '--outputFile=.remediation-validation/baseline-regression.json'])
+          finally:
+              path.write_bytes(original)
+          check('point-integration', ['run', 'test:int:postgres', '--run', 'test/fields/int.spec.ts', '-t', 'Fields point', '--reporter=json', '--outputFile=.remediation-validation/point-integration.json'])
+          check('drizzle-unit', ['exec', 'vitest', 'run', '--project', 'unit', 'packages/drizzle', '--reporter=json', '--outputFile=.remediation-validation/drizzle-unit.json'])
+          check('fields-integration', ['run', 'test:int:postgres', '--run', 'test/fields/int.spec.ts', '--reporter=json', '--outputFile=.remediation-validation/fields-integration.json'])
+          assert fixed.get('numPassedTests') == 2 and fixed.get('numFailedTests') == 0, fixed
+          assert baseline.get('numFailedTests') == 2 and baseline.get('numPassedTests') == 0, baseline
+          assert all(row['exit_code'] == 0 for row in rows if row['name'] != 'baseline-regression'), rows
+          PY
+      - name: Lint and format changed files
+        if: always() && steps.install.outcome == 'success'
+        run: |
+          set +e
+          pnpm exec eslint --flag v10_config_lookup_from_file packages/drizzle/src/upsertRow/index.ts test/fields/int.spec.ts > .remediation-validation/lint.log 2>&1
+          lint_status=$?
+          pnpm exec prettier --check packages/drizzle/src/upsertRow/index.ts test/fields/int.spec.ts > .remediation-validation/format.log 2>&1
+          format_status=$?
+          cat .remediation-validation/lint.log .remediation-validation/format.log
+          test "$lint_status" = 0 && test "$format_status" = 0
+      - name: Verify source restoration
+        if: always()
+        run: git diff --exit-code -- '*.ts' '*.tsx' '*.json' pnpm-lock.yaml pnpm-workspace.yaml
+      - name: Preserve validation evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: payload-remediation-17710
+          path: .remediation-validation
+          include-hidden-files: true
+          retention-days: 7
