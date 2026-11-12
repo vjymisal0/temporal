@@ -5,14 +5,14 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: temporal-remediation-validation
+  group: temporal-remediation-${{ github.sha }}
   cancel-in-progress: false
 env:
-  SOURCE_SHA: d1adf2a72621f90ee07cbf03fc3eb10f4f525e03
+  SOURCE_SHA: a0a25cfb9496480733f82bad4cb7a30d3f9fd783
   BASE_SHA: 03ecd1d228d2b8d9d433da55785afc9aeeead918
   CONTROL_BEFORE_SHA: e7f3ed721c75a53fb5cb3ae772482584d7792cda
-  CONTROL_MODE: archival
-  COMMIT: d1adf2a72621f90ee07cbf03fc3eb10f4f525e03
+  CONTROL_MODE: version-checker
+  COMMIT: a0a25cfb9496480733f82bad4cb7a30d3f9fd783
   GOMAXPROCS: '4'
   CGO_ENABLED: '1'
 jobs:
@@ -44,7 +44,7 @@ jobs:
           out = pathlib.Path('.remediation-validation')
           commands = [
               ('units', ['go', 'test', '-json', '-tags', 'test_dep,disable_grpc_modules', '-p', '4', '-parallel', '4', '-count=1', '-timeout', '15m', './common/versioninfo', './service/frontend']),
-              ('race', ['go', 'test', '-race', '-json', '-tags', 'test_dep,disable_grpc_modules', '-p', '4', '-parallel', '4', '-count=1', '-timeout', '5m', './common/versioninfo', './service/frontend', '-run', 'Test(ArchivalURIErrorContext|NamespaceHandlerCommonSuite)']),
+              ('race', ['go', 'test', '-race', '-json', '-tags', 'test_dep,disable_grpc_modules', '-p', '4', '-parallel', '4', '-count=1', '-timeout', '5m', './common/versioninfo', './service/frontend', '-run', 'Test(Caller|VersionChecker)']),
           ]
           rows = []
           for name, command in commands:
@@ -154,6 +154,7 @@ jobs:
         with:
           name: temporal-remediation-evidence
           path: .remediation-validation
+          include-hidden-files: true
           retention-days: 7
       - name: Save compiled Go cache
         if: always() && steps.prepare.outputs.build_cache_primary_key != ''
