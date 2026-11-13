@@ -1,0 +1,51 @@
+name: Vite Windows SSR HMR comparison
+on:
+  push:
+    branches: [remediation-ci/vite-hmr-windows-20261113]
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: upstream
+            ref: 61622b8df68b7a8e657caa6f98d9b70069643abf
+          - name: optimizer
+            ref: ab605148010ff35c7e686ef0e16c347fb11b5046
+    name: ${{ matrix.name }}
+    env:
+      NODE_OPTIONS: --max-old-space-size=6144
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      VITEST_SEGFAULT_RETRY: '3'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: vjymisal0/vite
+          ref: ${{ matrix.ref }}
+          persist-credentials: false
+      - name: Record exact source
+        run: git rev-parse HEAD
+      - uses: pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e
+        with:
+          runtime: node@26
+          cache: true
+      - name: Install Playwright
+        run: pnpm playwright install chromium
+      - name: Build
+        run: pnpm run build
+      - name: Reproduce SSR HMR build failures
+        run: |
+          pnpm run test-build playground/hmr-ssr 2>&1 | Tee-Object -FilePath hmr-ssr.log
+          exit $LASTEXITCODE
+      - name: Preserve scoped test evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: vite-windows-${{ matrix.name }}
+          path: hmr-ssr.log
+          if-no-files-found: warn
+          retention-days: 7
