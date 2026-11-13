@@ -1,0 +1,95 @@
+name: Devtron RBAC validation with full-suite diagnostics
+on:
+  push:
+    branches: [remediation-ci/devtron-auth-validation-20261113]
+permissions:
+  contents: read
+env:
+  SOURCE_SHA: fe8a29043dbceb15bb56edb160a57d1eb2aa3f0f
+  BASE_SHA: 6d3522367a1cf5dc1d6dbe8b50e7f41e542ff94d
+  GOMAXPROCS: '4'
+  CGO_ENABLED: '0'
+jobs:
+  auth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        with:
+          repository: vjymisal0/devtron
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: go.mod
+      - name: Build production, compare full-suite diagnostics and exercise RBAC
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib, subprocess, tempfile
+          root = pathlib.Path.cwd()
+          out = root / '.remediation-validation'
+          out.mkdir()
+          assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip() == os.environ['SOURCE_SHA']
+          subprocess.run(['git', 'merge-base', '--is-ancestor', os.environ['BASE_SHA'], 'HEAD'], check=True)
+          rows = []
+          def run(name, command, cwd=root):
+              log = out / (name + '.jsonl')
+              with log.open('wb') as output:
+                  result = subprocess.run(command, cwd=cwd, stdout=output, stderr=subprocess.STDOUT)
+              events = []
+              for line in log.read_text(errors='replace').splitlines():
+                  try: events.append(json.loads(line))
+                  except ValueError: pass
+              row = {'name': name, 'command': command, 'exit_code': result.returncode,
+                     'build_errors': [e['Output'] for e in events if e.get('Action') == 'build-output'],
+                     'passed': [e['Test'] for e in events if e.get('Action') == 'pass' and e.get('Test')],
+                     'failed': [e['Test'] for e in events if e.get('Action') == 'fail' and e.get('Test')]}
+              rows.append(row)
+              (out / 'summary.json').write_text(json.dumps(rows, indent=2))
+              print(json.dumps(row), flush=True)
+              return row
+          subprocess.run(['go', 'build', '-p', '2', './pkg/auth/user'], check=True)
+          full_command = ['go', 'test', '-json', '-p', '2', '-count=1', '-timeout', '10m', './pkg/auth/user']
+          candidate = run('full-candidate', full_command)
+          baseline_dir = pathlib.Path(tempfile.mkdtemp(prefix='devtron-auth-baseline-'))
+          subprocess.run(['git', 'worktree', 'add', '--detach', str(baseline_dir), os.environ['BASE_SHA']], check=True)
+          baseline = run('full-upstream', full_command, cwd=baseline_dir)
+          if baseline['exit_code']:
+              assert candidate['exit_code'] != 0
+              assert baseline['build_errors'] and sorted(baseline['build_errors']) == sorted(candidate['build_errors'])
+          else:
+              assert candidate['exit_code'] == 0
+          info = json.loads(subprocess.check_output(['go', 'list', '-json', './pkg/auth/user'], text=True))
+          files = ['pkg/auth/user/' + name for name in info['GoFiles']] + ['pkg/auth/user/UserCommonService_test.go']
+          (out / 'focused-scope.json').write_text(json.dumps({'production_files': files,
+              'reason': 'Additional RBAC validation; full-package inherited compilation diagnostics remain recorded above.'}, indent=2))
+          command = ['go', 'test', '-json', '-count=1', '-run', '^TestCheckRbacForARole$'] + files
+          focused = run('rbac', command)
+          assert focused['exit_code'] == 0
+          assert len([name for name in focused['passed'] if name.startswith('TestCheckRbacForARole/')]) == 18
+          source = root / 'pkg/auth/user/UserCommonService.go'
+          original = source.read_bytes()
+          old = b'return managerAuth(casbin.ResourceGlobal, token, "*")'
+          assert original.count(old) == 1
+          try:
+              source.write_bytes(original.replace(old, b'return true'))
+              control = run('global-auth-control', command)
+              assert control['exit_code'] != 0
+              assert len([name for name in control['failed'] if name.startswith('TestCheckRbacForARole/')]) == 10
+          finally:
+              source.write_bytes(original)
+          subprocess.run(['go', 'vet'] + files, check=True)
+          for name in subprocess.check_output(['git', 'diff', '--name-only', os.environ['BASE_SHA'] + '...HEAD', '--', '*.go'], text=True).splitlines():
+              assert subprocess.check_output(['gofmt', name]) == pathlib.Path(name).read_bytes(), name
+          subprocess.run(['git', 'diff', '--check', os.environ['BASE_SHA'] + '...HEAD'], check=True)
+          subprocess.run(['git', 'diff', '--exit-code', '--', '*.go', 'go.mod', 'go.sum'], check=True)
+          PY
+      - name: Preserve validation evidence
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: devtron-7025-rbac-validation
+          path: .remediation-validation
+          include-hidden-files: true
+          retention-days: 7
