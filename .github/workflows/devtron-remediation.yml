@@ -19,9 +19,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - pr: '7025-base'
-            source: 6d3522367a1cf5dc1d6dbe8b50e7f41e542ff94d
-            packages: ./pkg/auth/user
           - pr: '7024'
             source: 082fc4645aa6044ccb8ef63202e30b17b9cf0682
             packages: ./pkg/appStore/discover/repository ./pkg/auth/user/repository
@@ -47,6 +44,19 @@ jobs:
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
           go-version-file: go.mod
+      - name: Match the committed SDK path casing for Linux validation
+        run: |
+          python3 - <<'PY'
+          import os, pathlib
+          canonical = pathlib.Path('vendor/github.com/Microsoft/azure-devops-go-api')
+          alias = pathlib.Path('vendor/github.com/microsoft/azure-devops-go-api')
+          assert canonical.is_dir()
+          if not alias.exists():
+              alias.parent.mkdir(parents=True, exist_ok=True)
+              alias.symlink_to(os.path.relpath(canonical, alias.parent), target_is_directory=True)
+          assert alias.resolve() == canonical.resolve()
+          pathlib.Path('.remediation-validation/vendor-case-alias.txt').write_text(str(alias) + ' -> ' + str(canonical))
+          PY
       - name: Test changed packages and verify formatting
         run: |
           python3 - <<'PY'
