@@ -5,7 +5,7 @@ on:
 permissions:
   contents: read
 env:
-  SOURCE_SHA: fe8a29043dbceb15bb56edb160a57d1eb2aa3f0f
+  SOURCE_SHA: 3aa3a6857a06125d34162459e03dcf70bc466203
   BASE_SHA: 6d3522367a1cf5dc1d6dbe8b50e7f41e542ff94d
   GOMAXPROCS: '4'
   CGO_ENABLED: '0'
@@ -64,10 +64,11 @@ jobs:
           files = ['pkg/auth/user/' + name for name in info['GoFiles']] + ['pkg/auth/user/UserCommonService_test.go']
           (out / 'focused-scope.json').write_text(json.dumps({'production_files': files,
               'reason': 'Additional RBAC validation; full-package inherited compilation diagnostics remain recorded above.'}, indent=2))
-          command = ['go', 'test', '-json', '-count=1', '-run', '^TestCheckRbacForARole$'] + files
+          command = ['go', 'test', '-json', '-count=1', '-run', '^(TestCheckRbacForARole|TestMergeGroupsPreservesLiteralNames)$'] + files
           focused = run('rbac', command)
           assert focused['exit_code'] == 0
           assert len([name for name in focused['passed'] if name.startswith('TestCheckRbacForARole/')]) == 18
+          assert 'TestMergeGroupsPreservesLiteralNames' in focused['passed']
           source = root / 'pkg/auth/user/UserCommonService.go'
           original = source.read_bytes()
           old = b'return managerAuth(casbin.ResourceGlobal, token, "*")'
@@ -77,6 +78,17 @@ jobs:
               control = run('global-auth-control', command)
               assert control['exit_code'] != 0
               assert len([name for name in control['failed'] if name.startswith('TestCheckRbacForARole/')]) == 10
+          finally:
+              source.write_bytes(original)
+          source = root / 'pkg/auth/user/UserService.go'
+          original = source.read_bytes()
+          assert original.count(b'key := group') == 2
+          try:
+              source.write_bytes(original.replace(b'key := group', b'key := fmt.Sprintf(group)'))
+              # The deliberately restored bug also fails vet; this control must
+              # reach the runtime assertion rather than stop at that diagnostic.
+              group_control = run('literal-group-control', ['go', 'test', '-json', '-vet=off', '-count=1', '-run', '^TestMergeGroupsPreservesLiteralNames$'] + files)
+              assert group_control['exit_code'] != 0 and group_control['failed'] == ['TestMergeGroupsPreservesLiteralNames']
           finally:
               source.write_bytes(original)
           subprocess.run(['go', 'vet'] + files, check=True)
