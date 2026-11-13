@@ -1,0 +1,73 @@
+name: ToolJet PDF frontend validation
+on:
+  push:
+    branches: [remediation-ci/tooljet-pdf-20261113]
+permissions:
+  contents: read
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      TOOLJET_EDITION: ce
+      NODE_OPTIONS: --max-old-space-size=6144
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: vjymisal0/ToolJet
+          ref: e62151010bbea3635a57ee77014bbb3d5aa3009a
+          persist-credentials: false
+          fetch-depth: 3
+          sparse-checkout: |
+            frontend
+            plugins
+            packages
+            .prettierrc
+            .prettierignore
+            .editorconfig
+            package.json
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.4
+      - name: Verify pinned source
+        run: |
+          test "$(git rev-parse HEAD)" = e62151010bbea3635a57ee77014bbb3d5aa3009a
+          git merge-base --is-ancestor f258a8450a5fc6e5a99e03e81c8fc281d7c162ab HEAD
+          git merge-base --is-ancestor d8a133e28a618c744dec921ae79298b3797e421c HEAD
+          test "$(node --version)" = v22.23.4
+          test "$(npm --version)" = 10.9.9
+      - name: Frozen frontend install
+        id: install
+        run: npm ci --prefix frontend --no-audit --no-fund
+      - name: Scoped lint and test layout
+        working-directory: frontend
+        run: |
+          node node_modules/eslint/bin/eslint.js src/_lib/generate-file.js src/_lib/__tests__/generate-file.spec.js
+          npm run test:layout
+      - name: Real PDF regressions
+        working-directory: frontend
+        run: node node_modules/jest/bin/jest.js src/_lib/__tests__/generate-file.spec.js --runInBand --json --outputFile=pdf-results.json
+      - name: Full frontend CI tests
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        working-directory: frontend
+        run: npm run test:ci -- --json --outputFile=full-results.json
+      - name: Generate public plugin client
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npm run --prefix plugins create:client
+      - name: CE production build
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        env:
+          NODE_ENV: production
+        run: npm run --prefix frontend build
+      - name: Verify source and lockfiles unchanged
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: git diff --exit-code HEAD -- frontend/src frontend/package-lock.json
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: tooljet-17919-frontend-results
+          path: |
+            frontend/pdf-results.json
+            frontend/full-results.json
+          if-no-files-found: ignore
