@@ -19,11 +19,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - pr: '7025'
-            source: b9a70584e87c1090b5d0d46c294ec647cd7e812f
+          - pr: '7025-base'
+            source: 6d3522367a1cf5dc1d6dbe8b50e7f41e542ff94d
             packages: ./pkg/auth/user
           - pr: '7024'
-            source: 06f432fbb85cf39bbb7a0d0c89005a710c63660b
+            source: 082fc4645aa6044ccb8ef63202e30b17b9cf0682
             packages: ./pkg/appStore/discover/repository ./pkg/auth/user/repository
     env:
       SOURCE_SHA: ${{ matrix.source }}
@@ -72,6 +72,31 @@ jobs:
           print(json.dumps(row), flush=True)
           if result.returncode: print(path.read_text(errors='replace')[-10000:])
           sys.exit(result.returncode)
+          PY
+      - name: Verify query regression control
+        if: matrix.pr == '7024'
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, subprocess
+          source = pathlib.Path('pkg/appStore/discover/repository/AppStoreApplicationVersionRepository.go')
+          original = source.read_bytes()
+          old = b'_, err := impl.dbConnection.Query(&appStoreWithVersion, query, queryParams...)'
+          assert original.count(old) == 1
+          log = pathlib.Path('.remediation-validation/query-control.jsonl')
+          try:
+              source.write_bytes(original.replace(old, b'var err error'))
+              with log.open('wb') as output:
+                  result = subprocess.run(['go', 'test', '-json', '-count=1', '-run', '^TestFindWithFilter$', './pkg/appStore/discover/repository'], stdout=output, stderr=subprocess.STDOUT)
+              failures = []
+              for line in log.read_text(errors='replace').splitlines():
+                  try: event = json.loads(line)
+                  except ValueError: continue
+                  if event.get('Action') == 'fail' and event.get('Test', '').startswith('TestFindWithFilter/'):
+                      failures.append(event['Test'])
+              assert result.returncode != 0 and len(failures) == 4, (result.returncode, failures)
+              print(json.dumps({'control': 'query omitted', 'failed_cases': failures}))
+          finally:
+              source.write_bytes(original)
           PY
       - name: Vet changed packages
         run: |
