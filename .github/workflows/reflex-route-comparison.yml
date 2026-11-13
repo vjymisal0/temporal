@@ -45,6 +45,7 @@ jobs:
           lscpu > results/hardware.txt
           for sample in base-1 head-1 head-2 base-2; do
             if [[ "$sample" == base-* ]]; then tree=base; else tree=candidate; fi
+            mkdir -p "results/$sample"
             codspeed run --skip-upload --mode simulation --simulation-track-subprocess --profile-folder "$GITHUB_WORKSPACE/results/$sample" --working-directory "$GITHUB_WORKSPACE/$tree" -- 'uv run --locked pytest -v tests/benchmarks/test_routes.py -k test_route_matching --codspeed' > "results/$sample.log" 2>&1
             tail -n 30 "results/$sample.log"
           done
