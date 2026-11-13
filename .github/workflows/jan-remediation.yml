@@ -26,4 +26,16 @@ jobs:
       - name: Web application build and types
         run: yarn build:web
       - name: Check tracked source preservation
-        run: git diff --exit-code
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, subprocess
+          changed = subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines()
+          # Yarn sorts this existing dependency entry during the normal build.
+          # Permit only JSON key ordering, with every dependency value preserved.
+          assert set(changed) <= {'web-app/package.json'}, changed
+          for name in changed:
+              before = subprocess.check_output(['git', 'show', 'HEAD:' + name], text=True)
+              after = pathlib.Path(name).read_text()
+              assert json.loads(before) == json.loads(after), name
+          subprocess.run(['git', 'diff', '--exit-code', '--', '.', ':!web-app/package.json'], check=True)
+          PY
