@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
         with:
           repository: vjymisal0/jan
-          ref: baf4264020e47447491334d439ce1d10259e79ce
+          ref: c5db93e8b1ae281622ff3779c7748818f216edea
           persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
