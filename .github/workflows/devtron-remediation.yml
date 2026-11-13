@@ -20,7 +20,7 @@ jobs:
       matrix:
         include:
           - pr: '7024'
-            source: cd61bb3cff1df6a253af56afaf2038014cfb85d2
+            source: 84c932c0a95717017767265803a1eaa4a85aa534
             packages: ./pkg/appStore/discover/repository ./pkg/auth/user/repository
     env:
       SOURCE_SHA: ${{ matrix.source }}
