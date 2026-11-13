@@ -5,7 +5,7 @@ on:
 permissions:
   contents: read
 env:
-  SOURCE_SHA: 3aa3a6857a06125d34162459e03dcf70bc466203
+  SOURCE_SHA: 2990a61be247ab51aacd807f20278068d27ddb7d
   BASE_SHA: 6d3522367a1cf5dc1d6dbe8b50e7f41e542ff94d
   GOMAXPROCS: '4'
   CGO_ENABLED: '0'
