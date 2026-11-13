@@ -22,6 +22,7 @@ jobs:
             frontend
             plugins
             packages
+            server/src
             .prettierrc
             .prettierignore
             .editorconfig
@@ -37,6 +38,8 @@ jobs:
           git merge-base --is-ancestor d8a133e28a618c744dec921ae79298b3797e421c HEAD
           test "$(node --version)" = v22.23.4
           test "$(npm --version)" = 10.9.9
+      - name: Frozen public plugins install
+        run: npm ci --prefix plugins --no-audit --no-fund
       - name: Frozen frontend install
         id: install
         run: npm ci --prefix frontend --no-audit --no-fund
@@ -62,7 +65,7 @@ jobs:
         run: npm run --prefix frontend build
       - name: Verify source and lockfiles unchanged
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
-        run: git diff --exit-code HEAD -- frontend/src frontend/package-lock.json
+        run: git diff --exit-code HEAD -- frontend/src frontend/package-lock.json plugins/package-lock.json
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
